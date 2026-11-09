@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Dubai Trip Budget Planner & Itinerary (1 AED = ₹26)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --gold: #d97706;
+      --gold-light: #fef3c7;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --danger: #ef4444;
+      --warning-bg: #fffbeb;
+      --warning-border: #fcd34d;
+      --success: #10b981;
+      --radius: 16px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding-bottom: 120px; /* Space for sticky bar */
+    }
+
+    /* Top App Header */
+    .header-banner {
+      background: linear-gradient(135deg, #0c4a6e 0%, #0369a1 50%, #0284c7 100%);
+      color: #ffffff;
+      padding: 24px 16px 28px 16px;
+      border-bottom-left-radius: 28px;
+      border-bottom-right-radius: 28px;
+      position: relative;
+      box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.3);
+    }
+
+    .header-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .header-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-gold {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+
+    .header-desc {
+      font-size: 13px;
+      color: #bae6fd;
+      margin-bottom: 16px;
+    }
+
+    /* Currency Ticker */
+    .currency-pill-box {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 12px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+
+    .rate-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+    }
+
+    .rate-input-wrap input {
+      width: 55px;
+      background: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      padding: 3px 4px;
+      color: var(--text-main);
+    }
+
+    /* Container */
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 14px;
+    }
+
+    .section-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-top: 14px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .section-icon {
+      font-size: 18px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e0f2fe;
+      color: var(--primary-dark);
+      border-radius: 10px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* Counter controls */
+    .stepper-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stepper-card {
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 10px 12px;
+      text-align: center;
+    }
+
+    .stepper-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .stepper-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn-step {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      background: white;
+      color: var(--primary-dark);
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .btn-step:active {
+      transform: scale(0.95);
+    }
+
+    .stepper-val {
+      font-size: 17px;
+      font-weight: 800;
+      min-width: 28px;
+    }
+
+    /* Toggle switch */
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+    }
+
+    .switch-info {
+      flex: 1;
+      padding-right: 12px;
+    }
+
+    .switch-name {
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .switch-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #cbd5e1;
+      transition: .3s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--primary);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    /* Radio cards for stay */
+    .radio-card-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .radio-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .radio-card.active {
+      border-color: var(--primary);
+      background-color: #f0f9ff;
+    }
+
+    .radio-details {
+      flex: 1;
+    }
+
+    .radio-title {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .radio-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .radio-price {
+      text-align: right;
+    }
+
+    .radio-price-val {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .radio-price-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    /* Warning Alert Box */
+    .warning-alert {
+      background: var(--warning-bg);
+      border: 1px solid var(--warning-border);
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 12px;
+      color: #78350f;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .warning-alert strong {
+      color: #92400e;
+    }
+
+    /* Activity Item Cards */
+    .activity-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+
+    .activity-img-wrap {
+      width: 100%;
+      height: 140px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .activity-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .activity-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(15, 23, 42, 0.85);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      backdrop-filter: blur(4px);
+    }
+
+    .activity-body {
+      padding: 12px;
+    }
+
+    .activity-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 4px;
+    }
+
+    .activity-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .activity-pricing {
+      text-align: right;
+    }
+
+    .act-aed {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .act-inr {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .activity-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .pill-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    /* Image Carousel for Safari Gallery */
+    .safari-carousel-container {
+      position: relative;
+      margin: 10px 0 6px 0;
+    }
+
+    .safari-carousel-track {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 8px;
+      padding-bottom: 6px;
+      scrollbar-width: thin;
+    }
+
+    .safari-carousel-track::-webkit-scrollbar {
+      height: 4px;
+    }
+    .safari-carousel-track::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    .carousel-slide {
+      flex: 0 0 170px;
+      height: 115px;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      scroll-snap-align: start;
+      border: 1px solid var(--border);
+    }
+
+    .carousel-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .carousel-tag {
+      position: absolute;
+      bottom: 4px;
+      left: 4px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      backdrop-filter: blur(2px);
+      font-weight: 600;
+    }
+
+    .extra-addons-box {
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-top: 8px;
+      border: 1px dashed #cbd5e1;
+      font-size: 11px;
+    }
+
+    .addon-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+    }
+
+    /* Free spots grid */
+    .free-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .free-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .free-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .free-tag {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--success);
+    }
+
+    /* Sticky Bottom Total Bar */
+    .sticky-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border-top: 1px solid var(--border);
+      padding: 12px 16px;
+      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08);
+      z-index: 1000;
+    }
+
+    .bar-content {
+      max-width: 480px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .total-labels {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .total-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .total-inr-grand {
+      font-size: 20px;
+      font-weight: 800;
+      color: #047857; /* Emerald green */
+      line-height: 1.2;
+    }
+
+    .total-aed-sub {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .per-pax-box {
+      font-size: 11px;
+      background: #ecfdf5;
+      color: #065f46;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 700;
+    }
+
+    .view-breakdown-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* Modal for summary */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      padding: 20px 14px;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-sheet {
+      background: white;
+      width: 100%;
+      max-width: 480px;
+      border-radius: 24px 24px 0 0;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 20px 18px 30px 18px;
+      animation: slideUp 0.25s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .close-btn {
+      background: #f1f5f9;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 6px 0;
+      border-bottom: 1px dashed #f1f5f9;
+    }
+
+    .breakdown-total {
+      font-weight: 800;
+      font-size: 15px;
+      padding-top: 10px;
+      border-top: 2px solid var(--border);
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top App Header -->
+  <header class="header-banner">
+    <div class="container">
+      <div class="header-title-row">
+        <h1 class="header-title">
+          <span>🇦🇪</span> Dubai Trip Planner
+        </h1>
+        <span class="badge badge-gold">2026 Ready</span>
+      </div>
+      <p class="header-desc">Instant budget calculation, live exchange rate & insider travel tips.</p>
+      
+      <!-- Exchange rate pill -->
+      <div class="currency-pill-box">
+        <span>Conversion Rate: <strong>1 AED =</strong></span>
+        <div class="rate-input-wrap">
+          <span>₹</span>
+          <input type="number" id="inrRate" value="26" step="0.5" oninput="calculateTripTotal()" />
+          <span>INR</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Section 1: Trip Parameters -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon">👥</div>
+        <h2 class="section-title">Trip Duration & Travelers</h2>
+      </div>
+      <div class="stepper-grid">
+        <div class="stepper-card">
+          <div class="stepper-label">Persons</div>
+          <div class="stepper-controls">
+            <button class="btn-step" onclick="updateCounter('persons', -1)">−</button>
+            <span class="stepper-val" id="personsVal">2</span>
+            <button class="btn-step" onclick="updateCounter('persons', 1)">+</button>
+          </div>
+        </div>
+        <div class="stepper-card">
+          <div class="stepper-label">Days</div>
+          <div class="stepper-controls">
+            <button class="btn-step" onclick="updateCounter('days', -1)">−</button>
+            <span class="stepper-val" id="daysVal">5</span>
+            <button class="btn-step" onclick="updateCounter('days', 1)">+</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Flights (Optional Toggle) -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon">✈️</div>
+        <h2 class="section-title">Flights (Optional Round-Trip)</h2>
+      </div>
+      <div class="switch-row">
+        <div class="switch-info">
+          <div class="switch-name">Include Flight Tickets</div>
+          <div class="switch-desc">Estimated round trip from India per person</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="includeFlight" onchange="toggleFlightInput()" checked />
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div id="flightInputContainer" style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 10px; border-radius: 10px;">
+        <span style="font-size: 12px; font-weight: 600;">Cost / Person (₹):</span>
+        <input type="number" id="flightCostInr" value="20000" step="500" style="width: 110px; padding: 6px; border: 1px solid var(--border); border-radius: 6px; font-weight: 700; text-align: right;" oninput="calculateTripTotal()" />
+      </div>
+      <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">
+        Check deals on: <a href="https://www.google.com/travel/flights" target="_blank" class="pill-link">Google Flights ↗</a> or <a href="https://www.skyscanner.co.in" target="_blank" class="pill-link">Skyscanner ↗</a>
+      </div>
+    </section>
+
+    <!-- Section 3: Accommodation -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon">🏨</div>
+        <h2 class="section-title">Stay Type (Per Night)</h2>
+      </div>
+      <div class="radio-card-group">
+        <label class="radio-card" onclick="selectStay('dorm')">
+          <input type="radio" name="stayType" value="dorm" style="display:none" />
+          <div class="radio-details">
+            <div class="radio-title">Hostel / Dormitory Bed</div>
+            <div class="radio-subtitle">Deira, Bur Dubai budget stays (AED 120–300 / $33–82)</div>
+          </div>
+          <div class="radio-price">
+            <div class="radio-price-val">AED 150</div>
+            <div class="radio-price-sub">₹3,900 / night</div>
+          </div>
+        </label>
+
+        <label class="radio-card active" onclick="selectStay('airbnb')">
+          <input type="radio" name="stayType" value="airbnb" checked style="display:none" />
+          <div class="radio-details">
+            <div class="radio-title">Airbnb / Shared Apartment</div>
+            <div class="radio-subtitle">Cost-effective for couples & friends</div>
+          </div>
+          <div class="radio-price">
+            <div class="radio-price-val">AED 220</div>
+            <div class="radio-price-sub">₹5,720 / night</div>
+          </div>
+        </label>
+
+        <label class="radio-card" onclick="selectStay('hotel')">
+          <input type="radio" name="stayType" value="hotel" style="display:none" />
+          <div class="radio-details">
+            <div class="radio-title">3★ / 4★ Hotel Room</div>
+            <div class="radio-subtitle">Private hotel room with daily housekeeping</div>
+          </div>
+          <div class="radio-price">
+            <div class="radio-price-val">AED 380</div>
+            <div class="radio-price-sub">₹9,880 / night</div>
+          </div>
+        </label>
+      </div>
+    </section>
+
+    <!-- Section 4: Mandatory Travel Essentials -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon">🛂</div>
+        <h2 class="section-title">Travel Essentials (Per Person)</h2>
+      </div>
+
+      <!-- Visa -->
+      <div class="switch-row" style="border-bottom: 1px solid #f1f5f9;">
+        <div class="switch-info">
+          <div class="switch-name">
+            14-Day Tourist Visa
+          </div>
+          <div class="switch-desc">
+            Processing approx ₹6,500 (~AED 250) or fast-track via <a href="https://amer247.com/uae-tourist-visa" target="_blank" class="pill-link">Amer247 ↗</a>
+          </div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="chk_visa" onchange="calculateTripTotal()" checked />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- NOL Metro Pass -->
+      <div class="switch-row" style="border-bottom: 1px solid #f1f5f9;">
+        <div class="switch-info">
+          <div class="switch-name">7-Day NOL Silver Pass (AED 110)</div>
+          <div class="switch-desc">Unlimited travel on Dubai Metro, Tram & Buses</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="chk_nol" onchange="calculateTripTotal()" checked />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- Tourist SIM -->
+      <div class="switch-row">
+        <div class="switch-info">
+          <div class="switch-name">Tourist SIM Card (AED 49)</div>
+          <div class="switch-desc">4GB 5G Data + 30 Local/Intl Mins (~USD 13.35)</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="chk_sim" onchange="calculateTripTotal()" checked />
+          <span class="slider"></span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Section 5: Activities & Experiences -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon">🎡</div>
+        <h2 class="section-title">Paid Attractions & Experiences</h2>
+      </div>
+
+      <!-- 1. Modern Abra / Atlantis Scenic Cruise -->
+      <div class="activity-card" id="card_cruise">
+        <div class="activity-img-wrap" style="height: 175px;">
+          <img src="atlantis-abra-boat.jpg" alt="Atlantis Scenic Cruise Modern Abra Boat" class="activity-img" onerror="this.src='cruise-map.jpg'" />
+          <span class="activity-badge">⚓ 2 Hours Scenic Cruise</span>
+        </div>
+        <div class="activity-body">
+          <div class="activity-header">
+            <div>
+              <div class="activity-name">Atlantis Scenic Cruise (Modern Abra - Sharing Boat)</div>
+              <div style="font-size: 11px; color: var(--text-muted);"><a href="https://www.abratours.ae/booking/" target="_blank" class="pill-link">abratours.ae Official Booking ↗</a></div>
+            </div>
+            <div class="activity-pricing">
+              <div class="act-aed">AED 150</div>
+              <div class="act-inr">₹3,900 / pax</div>
+            </div>
+          </div>
+
+          <!-- Cruise Photo Carousel (Boat View + Route Map + Official Card) -->
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-main); margin-top: 6px;">📸 Cruise Views & Route (Swipe):</div>
+          <div class="safari-carousel-container">
+            <div class="safari-carousel-track">
+              <div class="carousel-slide" style="flex: 0 0 190px;">
+                <img src="atlantis-abra-boat.jpg" alt="Modern Abra Boat in front of Atlantis The Palm" />
+                <span class="carousel-tag">Atlantis The Palm View</span>
+              </div>
+              <div class="carousel-slide" style="flex: 0 0 190px;">
+                <img src="cruise-map.jpg" alt="Full Cruise Route Map" />
+                <span class="carousel-tag">Complete Route Map</span>
+              </div>
+              <div class="carousel-slide" style="flex: 0 0 190px;">
+                <img src="atlantis-cruise-card.png" alt="Official Booking Snapshot" />
+                <span class="carousel-tag">Official Package Card</span>
+              </div>
+            </div>
+          </div>
+          
+          <p class="activity-desc">
+            <strong>Key Sights:</strong> Dubai Harbour, Dubai Marina Skyline, Dubai Marina Mall, Ain Dubai, JBR, Atlantis The Palm, Palm West Beach, Cruise Terminal & Skydive Dubai. Max 18 persons per boat.
+          </p>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+            <span style="font-size: 11px; color: #b45309; font-weight: 600;">Washroom, shower & BYO food/drinks</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="chk_cruise" onchange="calculateTripTotal()" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Hummer Desert Safari (Updated with Photo Gallery Carousel) -->
+      <div class="activity-card" id="card_safari">
+        <div class="activity-img-wrap">
+          <img src="safari-hummer.jpg" alt="Desert Safari in Hummer H2" class="activity-img" onerror="this.src='https://images.unsplash.com/photo-1451337516015-6b6e9a44a8a3?auto=format&fit=crop&w=800&q=80'" />
+          <span class="activity-badge">🚙 VIP Hummer H2 Safari</span>
+        </div>
+        <div class="activity-body">
+          <div class="activity-header">
+            <div>
+              <div class="activity-name">Desert Safari in Hummer H2</div>
+              <div style="font-size: 11px; color: var(--text-muted);"><a href="https://www.dunebashing.net/hummer-desert-safari/" target="_blank" class="pill-link">Dunebashing.net Official ↗</a></div>
+            </div>
+            <div class="activity-pricing">
+              <div class="act-aed">AED 300</div>
+              <div class="act-inr">₹7,800 / pax</div>
+            </div>
+          </div>
+          <p class="activity-desc">
+            Pick up & drop anywhere in Dubai/Sharjah in Hummer H2. 30m intense dune bashing, camel rides, falcon photo, henna painting, Arabic tea & dates, sheesha, live shows & 5-star BBQ buffet dinner.
+          </p>
+
+          <!-- Safari Gallery Carousel -->
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-main); margin-top: 8px;">📸 Safari Experiences & Shows (Swipe to view):</div>
+          <div class="safari-carousel-container">
+            <div class="safari-carousel-track">
+              <div class="carousel-slide">
+                <img src="safari-hummer.jpg" alt="Hummer H2 Dune Bashing" />
+                <span class="carousel-tag">Hummer H2 Bashing</span>
+              </div>
+              <div class="carousel-slide">
+                <img src="safari-tanoura.jpg" alt="Tanoura Dance Show" />
+                <span class="carousel-tag">Tanoura Dance Show</span>
+              </div>
+              <div class="carousel-slide">
+                <img src="safari-bellydance1.png" alt="Belly Dance Show" />
+                <span class="carousel-tag">Belly Dance Act</span>
+              </div>
+              <div class="carousel-slide">
+                <img src="safari-bellydance2.png" alt="Live Desert Acrobatics" />
+                <span class="carousel-tag">Acrobatic Dance</span>
+              </div>
+              <div class="carousel-slide">
+                <img src="safari-bbq.jpg" alt="BBQ Buffet Dinner" />
+                <span class="carousel-tag">Deluxe BBQ Buffet</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="warning-alert">
+            <span>⚠️</span>
+            <div>
+              <strong>Insider Tip:</strong> Apne saath Dubai/Saudi Gamcha/Keffiyeh cloth aur sunglasses pehle se le kar jayein! Desert camp wale ye cloth local market se 20x mehenge bechte hain.
+            </div>
+          </div>
+
+          <!-- Quad Bike Offers -->
+          <div class="extra-addons-box">
+            <strong>🏍️ Quad Bike Optional Addons (1 Person):</strong>
+            <div class="addon-item">
+              <span>• Inside Track (Limited Area): 30 mins / 1 hr</span>
+              <span style="font-weight: 700;">AED 60 / AED 85</span>
+            </div>
+            <div class="addon-item">
+              <span>• Open Desert Track: 35 mins / 1 hr</span>
+              <span style="font-weight: 700;">AED 85 / AED 120</span>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+            <label class="toggle-switch">
+              <input type="checkbox" id="chk_safari" onchange="calculateTripTotal()" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Burj Khalifa Top -->
+      <div class="activity-card" id="card_burj">
+        <div class="activity-img-wrap" style="height: 175px;">
+          <img src="burj-deck-124.jpg" alt="Burj Khalifa Level 124 Open Air Observation Deck" class="activity-img" onerror="this.src='burj-wings-125.jpg'" />
+          <span class="activity-badge">🌆 Level 124 & 125</span>
+        </div>
+        <div class="activity-body">
+          <div class="activity-header">
+            <div>
+              <div class="activity-name">Burj Khalifa: At The Top (Level 124 & 125)</div>
+              <div style="font-size: 11px;"><a href="https://ticket.atthetop.ae/tickets/book-tickets/" target="_blank" class="pill-link">Official Ticket Portal (atthetop.ae) ↗</a></div>
+            </div>
+            <div class="activity-pricing">
+              <div class="act-aed">AED 189</div>
+              <div class="act-inr">₹4,914 / pax</div>
+            </div>
+          </div>
+          <p class="activity-desc">
+            Explore Level 124 and 125 of Burj Khalifa. Delight in the observation decks, outside terrace, and take in stunning 360° views of Dubai’s cityscape.
+          </p>
+
+          <!-- Burj Khalifa Photo Carousel -->
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-main); margin-top: 6px;">📸 Inside Observation Decks (Swipe):</div>
+          <div class="safari-carousel-container">
+            <div class="safari-carousel-track">
+              <div class="carousel-slide" style="flex: 0 0 190px;">
+                <img src="burj-deck-124.jpg" alt="Level 124 Open Air Deck View" />
+                <span class="carousel-tag">Level 124 Outdoor Deck</span>
+              </div>
+              <div class="carousel-slide" style="flex: 0 0 190px;">
+                <img src="burj-wings-125.jpg" alt="Level 125 Glass Wings Art View" />
+                <span class="carousel-tag">Level 125 Wings of Dubai</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+            <span style="font-size: 11px; color: var(--text-muted);">🕒 10:00 AM – 9:00 PM (Last Entry 8:15 PM)</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="chk_burj" onchange="calculateTripTotal()" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Dubai Frame -->
+      <div class="activity-card" id="card_frame">
+        <div class="activity-img-wrap">
+          <img src="frame-outside.png" alt="Dubai Frame Iconic View" class="activity-img" onerror="this.src='https://images.unsplash.com/photo-1578895101408-1a36b834405b?auto=format&fit=crop&w=800&q=80'" />
+          <span class="activity-badge">🖼️ 150m High Sky Glass Bridge</span>
+        </div>
+        <div class="activity-body">
+          <div class="activity-header">
+            <div>
+              <div class="activity-name">Dubai Frame + Zabeel Park</div>
+              <div style="font-size: 11px;"><a href="https://ticketingsales.dubaiframe.ae/index.php?lang=en#" target="_blank" class="pill-link">Official Ticket Portal ↗</a></div>
+            </div>
+            <div class="activity-pricing">
+              <div class="act-aed">AED 55</div>
+              <div class="act-inr">₹1,430 / pax</div>
+            </div>
+          </div>
+          <p class="activity-desc">
+            Walk across the 150-meter-high glass floor bridge with Old Dubai (Deira & Karama) on one side and Modern Dubai (Burj Khalifa & Downtown) on the other. Includes future Dubai museum exhibits.
+          </p>
+
+          <!-- Dubai Frame Photo Carousel -->
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-main); margin-top: 6px;">📸 Inside The Frame (Swipe to see):</div>
+          <div class="safari-carousel-container">
+            <div class="safari-carousel-track">
+              <div class="carousel-slide">
+                <img src="frame-outside.png" alt="Dubai Frame Architecture" />
+                <span class="carousel-tag">Iconic Landmark</span>
+              </div>
+              <div class="carousel-slide">
+                <img src="frame-glassfloor.png" alt="150m Transparent Glass Floor" />
+                <span class="carousel-tag">150m Glass Floor Walk</span>
+              </div>
+              <div class="carousel-slide">
+                <img src="frame-skypromenade.jpg" alt="Sky Bridge & Digital Exhibits" />
+                <span class="carousel-tag">Sky Deck Promenade</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+            <span style="font-size: 11px; color: var(--text-muted);">Includes AED 50 Frame + AED 5 Zabeel Park</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="chk_frame" onchange="calculateTripTotal()" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Global Village -->
+      <div class="activity-card" id="card_global">
+        <div class="activity-img-wrap">
+          <img src="gv-europe.jpg" alt="Global Village Pavilions" class="activity-img" onerror="this.src='https://images.unsplash.com/photo-1546412414-e1885259563a?auto=format&fit=crop&w=800&q=80'" />
+          <span class="activity-badge">🎪 Entry + Shows & Dining</span>
+        </div>
+        <div class="activity-body">
+          <div class="activity-header">
+            <div>
+              <div class="activity-name">Global Village (Entry + Dining)</div>
+              <div style="font-size: 11px;"><a href="https://www.globalvillage.ae/en/buy" target="_blank" class="pill-link">globalvillage.ae/en/buy ↗</a></div>
+            </div>
+            <div class="activity-pricing">
+              <div class="act-aed">AED 55</div>
+              <div class="act-inr">₹1,430 / pax</div>
+            </div>
+          </div>
+          <p class="activity-desc">
+            30+ country pavilions, street food & world shows. Ticket: <strong>AED 25</strong> entry + <strong>AED 30</strong> food/snack budget included (= AED 55 total/pax).
+          </p>
+
+          <!-- Global Village Attraction Gallery -->
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-main); margin-top: 6px;">📸 Inside Attractions & Shows (Swipe):</div>
+          <div class="safari-carousel-container">
+            <div class="safari-carousel-track">
+              <div class="carousel-slide">
+                <img src="gv-europe.jpg" alt="Europe & World Pavilions" />
+                <span class="carousel-tag">World Pavilions</span>
+              </div>
+              <div class="carousel-slide">
+                <img src="gv-stunt.jpg" alt="Fast Live Stunt Show - AED 20" />
+                <span class="carousel-tag">Stunt Show (AED 20)</span>
+              </div>
+              <div class="carousel-slide">
+                <img src="gv-exo.jpg" alt="EXO Planet City - AED 85" />
+                <span class="carousel-tag">EXO Planet (AED 85)</span>
+              </div>
+              <div class="carousel-slide">
+                <img src="gv-dragon.jpg" alt="The Dragon Kingdom - AED 40" />
+                <span class="carousel-tag">Dragon Kingdom (AED 40)</span>
+              </div>
+              <div class="carousel-slide">
+                <img src="gv-neongalaxy.jpg" alt="Neon Galaxy X - AED 55" />
+                <span class="carousel-tag">Neon Galaxy (AED 55)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stunt & Play Addons Box -->
+          <div class="extra-addons-box">
+            <strong>🎟️ Popular Shows & Zone Add-ons (Per Person):</strong>
+            <div class="addon-item">
+              <span>• Fast Live Stunt Show (Regular Seat)</span>
+              <span style="font-weight: 700;">AED 20.00</span>
+            </div>
+            <div class="addon-item">
+              <span>• The Dragon Kingdom (11 Themed Rooms)</span>
+              <span style="font-weight: 700;">AED 40.00</span>
+            </div>
+            <div class="addon-item">
+              <span>• Neon Galaxy X Challenge Zone (Full Day)</span>
+              <span style="font-weight: 700;">AED 55.00</span>
+            </div>
+            <div class="addon-item">
+              <span>• EXO Planet City Saver Combo</span>
+              <span style="font-weight: 700;">AED 85.00</span>
+            </div>
+          </div>
+
+          <div class="extra-addons-box" style="margin-top: 6px; background:#fffbeb; border-color:#fde68a;">
+            💡 <strong>Food Crawl Tip:</strong> Budget AED 80–120/person for a serious multi-cuisine crawl, or AED 40–80 for light snacking. <strong>Bring AED 150–200 in cash.</strong>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
+            <label class="toggle-switch">
+              <input type="checkbox" id="chk_global" onchange="calculateTripTotal()" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Museum of the Future -->
+      <div class="activity-card" id="card_museum">
+        <div class="activity-body">
+          <div class="activity-header">
+            <div>
+              <div class="activity-name">Museum of the Future</div>
+              <div style="font-size: 11px;"><a href="https://museumofthefuture.ae/" target="_blank" class="pill-link">Book 2-3 Weeks Early ↗</a></div>
+            </div>
+            <div class="activity-pricing">
+              <div class="act-aed">AED 149</div>
+              <div class="act-inr">₹3,874 / pax</div>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+            <span style="font-size: 11px; color: var(--text-muted);">Iconic Arabic calligraphy ring building</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="chk_museum" onchange="calculateTripTotal()" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. Dubai Creek Abra Ride -->
+      <div class="activity-card" style="padding: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-size: 13px; font-weight: 700;">Traditional Abra Ride (Dubai Creek)</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Bur Dubai ➔ Deira Old Souk crossing</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-weight: 800; color: var(--primary-dark);">AED 1</div>
+            <div style="font-size: 10px; color: var(--text-muted);">₹26</div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Section 6: Free Attractions & Sightseeing -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon">🆓</div>
+        <h2 class="section-title">Free Attractions (AED 0 / ₹0)</h2>
+      </div>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">No ticket needed! Walk in and enjoy these world-class spots:</p>
+
+      <!-- Featured Spotlight: Burj Khalifa Fountain & LED Laser Show -->
+      <div style="background: #ffffff; border: 1.5px solid #38bdf8; border-radius: 14px; overflow: hidden; margin-bottom: 14px; box-shadow: var(--shadow-sm);">
+        <div class="activity-img-wrap" style="height: 160px;">
+          <img src="fountain-aerial.jpg" alt="Burj Khalifa Fountain Show" class="activity-img" onerror="this.src='fountain-night.jpg'" />
+          <span class="activity-badge" style="background: #0284c7;">✨ Free Evening Shows</span>
+        </div>
+        <div style="padding: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <div style="font-size: 15px; font-weight: 800; color: var(--text-main);">Burj Khalifa Fountain & LED Laser Show</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Downtown Dubai • Dubai Mall Waterfront Promenade</div>
+            </div>
+            <span class="badge" style="background:#ecfdf5; color:#065f46; font-weight:800;">FREE ENTRY</span>
+          </div>
+
+          <div style="background: #f0f9ff; border-radius: 8px; padding: 8px 10px; margin: 8px 0; border: 1px solid #bae6fd; font-size: 11.5px; color: #0369a1;">
+            ⏰ <strong>Evening Shows:</strong> Daily from <strong>6:00 PM to 11:00 PM</strong>, running <strong>every 30 minutes</strong>! Synchronized to Arabic, pop & classical music.
+          </div>
+
+          <!-- Fountain & LED Show Photo Carousel -->
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-main); margin-top: 6px;">📸 Spectacular Views (Swipe):</div>
+          <div class="safari-carousel-container">
+            <div class="safari-carousel-track">
+              <div class="carousel-slide">
+                <img src="fountain-aerial.jpg" alt="Burj Khalifa Fountain Aerial Sunset View" />
+                <span class="carousel-tag">Fountain Aerial Sunset</span>
+              </div>
+              <div class="carousel-slide">
+                <img src="fountain-night.jpg" alt="Dancing Fountains Lake Night View" />
+                <span class="carousel-tag">Dancing Waters at Night</span>
+              </div>
+              <div class="carousel-slide">
+                <img src="burj-led-show.jpg" alt="Burj Khalifa Full LED Light & Laser Show" />
+                <span class="carousel-tag">Burj Khalifa LED Show</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+            <a href="https://www.google.com/search?kgmid=%2Fm%2F06_7k2" target="_blank" class="pill-link">Google Maps Location ↗</a>
+            <span style="font-size: 11px; color: var(--text-muted);">Best spot: Souk Al Bahar Bridge</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Spotlight 2: Al Fahidi Historical Neighbourhood -->
+      <div style="background: #ffffff; border: 1.5px solid #d97706; border-radius: 14px; overflow: hidden; margin-bottom: 14px; box-shadow: var(--shadow-sm);">
+        <div class="activity-img-wrap" style="height: 160px;">
+          <img src="fahidi-fort.jpg" alt="Al Fahidi Fort & Historical Courtyard" class="activity-img" onerror="this.src='fahidi-alley.jpg'" />
+          <span class="activity-badge" style="background: #b45309;">🏛️ Old Dubai Heritage</span>
+        </div>
+        <div style="padding: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <div style="font-size: 15px; font-weight: 800; color: var(--text-main);">Al Fahidi Historical Neighbourhood (Bastakiya)</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Bur Dubai • Along Dubai Creek</div>
+            </div>
+            <span class="badge" style="background:#ecfdf5; color:#065f46; font-weight:800;">FREE ENTRY</span>
+          </div>
+
+          <div style="background: #fffbeb; border-radius: 8px; padding: 8px 10px; margin: 8px 0; border: 1px solid #fde68a; font-size: 11.5px; color: #92400e;">
+            🏺 <strong>Highlights:</strong> 19th-century gypsum & coral stone buildings, traditional wind towers (Barajeel), art galleries, courtyard cafés & Al Fahidi Fort. <strong>100% Free walking area.</strong>
+          </div>
+
+          <!-- Al Fahidi Photo Carousel -->
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-main); margin-top: 6px;">📸 Heritage & Architecture (Swipe):</div>
+          <div class="safari-carousel-container">
+            <div class="safari-carousel-track">
+              <div class="carousel-slide">
+                <img src="fahidi-alley.jpg" alt="Traditional Narrow Heritage Alleyways (Sikkas)" />
+                <span class="carousel-tag">Historic Sikkas</span>
+              </div>
+              <div class="carousel-slide">
+                <img src="fahidi-fort.jpg" alt="Al Fahidi Courtyard & Ancient Water Well" />
+                <span class="carousel-tag">Courtyard & Well</span>
+              </div>
+              <div class="carousel-slide">
+                <img src="fahidi-windtower.png" alt="Barajeel Wind Towers Architecture" />
+                <span class="carousel-tag">Wind Tower Alleys</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+            <a href="https://dubaiculture.gov.ae/en/explore-dubai/culture-heritage/heritage-sites/Al-Fahidi-Historical-Neighbourhood" target="_blank" class="pill-link">Dubai Culture Official Guide ↗</a>
+            <span style="font-size: 11px; color: var(--text-muted);">Metro: Al Fahidi Stn</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spotlight 3: Jumeirah Sunset Beach (Burj Al Arab Sunset) -->
+      <div style="background: #ffffff; border: 1.5px solid #f97316; border-radius: 14px; overflow: hidden; margin-bottom: 14px; box-shadow: var(--shadow-sm);">
+        <div class="activity-img-wrap" style="height: 180px;">
+          <img src="jumeirah-sunset.jpg" alt="Jumeirah Sunset Beach & Burj Al Arab" class="activity-img" />
+          <span class="activity-badge" style="background: #ea580c;">🌅 Iconic Sunset Point</span>
+        </div>
+        <div style="padding: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <div style="font-size: 15px; font-weight: 800; color: var(--text-main);">Jumeirah Public Beach (Sunset Beach)</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Jumeirah 3 • Direct View of Burj Al Arab</div>
+            </div>
+            <span class="badge" style="background:#ecfdf5; color:#065f46; font-weight:800;">FREE BEACH</span>
+          </div>
+
+          <div style="background: #fff7ed; border-radius: 8px; padding: 8px 10px; margin: 8px 0; border: 1px solid #ffedd5; font-size: 11.5px; color: #c2410c;">
+            📸 <strong>Best Sunset in Dubai:</strong> Perfect golden-hour photography spot directly facing the iconic 7-star <strong>Burj Al Arab</strong> and Jumeirah Beach Hotel. Free open swimming & jogging track.
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+            <a href="https://www.google.com/search?kgmid=%2Fg%2F11rxn3dql" target="_blank" class="pill-link">Google Maps Directions ↗</a>
+            <span style="font-size: 11px; color: var(--text-muted);">Best Time: 5:00 PM – 6:30 PM</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spotlight 4: Deira Gold & Spice Souk -->
+      <div style="background: #ffffff; border: 1.5px solid #eab308; border-radius: 14px; overflow: hidden; margin-bottom: 14px; box-shadow: var(--shadow-sm);">
+        <div class="activity-img-wrap" style="height: 170px;">
+          <img src="goldsouk-gate.jpg" alt="Deira Gold Souk Iconic Wooden Entrance" class="activity-img" onerror="this.src='goldsouk-dress.jpg'" />
+          <span class="activity-badge" style="background: #ca8a04;">✨ City of Gold</span>
+        </div>
+        <div style="padding: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <div style="font-size: 15px; font-weight: 800; color: var(--text-main);">Deira Gold Souk & Spice Souk</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Al Ras, Deira • Right across Dubai Creek</div>
+            </div>
+            <span class="badge" style="background:#ecfdf5; color:#065f46; font-weight:800;">FREE ENTRY</span>
+          </div>
+
+          <div style="background: #fefce8; border-radius: 8px; padding: 8px 10px; margin: 8px 0; border: 1px solid #fef08a; font-size: 11.5px; color: #854d0e;">
+            🪙 <strong>World's Largest Gold Market:</strong> 300+ retailers with pure 18k–24k gold, massive gold dress displays, saffron, frankincense, authentic spices & perfumes. Government regulated for purity.
+          </div>
+
+          <!-- Gold Souk Photo Carousel -->
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-main); margin-top: 6px;">📸 Iconic Souk Highlights (Swipe):</div>
+          <div class="safari-carousel-container">
+            <div class="safari-carousel-track">
+              <div class="carousel-slide">
+                <img src="goldsouk-gate.jpg" alt="Historic Wooden Arch Gate Entrance" />
+                <span class="carousel-tag">Iconic Souk Gate</span>
+              </div>
+              <div class="carousel-slide">
+                <img src="goldsouk-dress.jpg" alt="Pure Gold Wearable Dress & Heavy Bridal Sets" />
+                <span class="carousel-tag">Pure Gold Dresses</span>
+              </div>
+              <div class="carousel-slide">
+                <img src="goldsouk-window.jpg" alt="Giant Gold Window Displays" />
+                <span class="carousel-tag">Shop Window Wonders</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+            <a href="https://www.google.com/search?kgmid=%2Fm%2F03wfhyy" target="_blank" class="pill-link">Google Maps Directions ↗</a>
+            <span style="font-size: 11px; color: var(--text-muted);">Take AED 1 Abra to cross creek!</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="free-grid">
+        <div class="free-card">
+          <div class="free-title">Dubai Marina Walk</div>
+          <a href="https://www.google.com/search?kgmid=%2Fg%2F11b75jtlcj" target="_blank" class="pill-link">Marina Views ↗</a>
+          <span class="free-tag">Night Stroll</span>
+        </div>
+
+        <div class="free-card">
+          <div class="free-title">Bluewaters & Ain Dubai Walk</div>
+          <a href="https://www.bluewatersdubai.ae/" target="_blank" class="pill-link">Footbridge ↗</a>
+          <span class="free-tag">Free Promenade</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Sticky Bottom Calculation Bar -->
+  <footer class="sticky-bar">
+    <div class="bar-content">
+      <div class="total-labels">
+        <div class="total-title">Total Trip Cost</div>
+        <div class="total-inr-grand" id="grandInrDisplay">₹0</div>
+        <div class="total-aed-sub" id="grandAedDisplay">0 AED</div>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+        <span class="per-pax-box" id="perPersonDisplay">₹0 / person</span>
+        <button class="view-breakdown-btn" onclick="openBreakdownModal()">View Summary 📋</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Cost Breakdown Modal -->
+  <div class="modal-overlay" id="breakdownModal" onclick="closeBreakdownModal(event)">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">Trip Cost Breakdown</h3>
+        <button class="close-btn" onclick="closeBreakdownModal()">✕</button>
+      </div>
+      <div id="modalSummaryContent">
+        <!-- Injected via JS -->
+      </div>
+      <button class="view-breakdown-btn" style="width: 100%; margin-top: 16px; padding: 12px; font-size: 14px;" onclick="window.print()">Print / Save as PDF</button>
+    </div>
+  </div>
+
+  <script>
+    // Initial State
+    let trip = {
+      persons: 2,
+      days: 5,
+      stayType: 'airbnb', // 'dorm', 'airbnb', 'hotel'
+      stayRatesAed: {
+        dorm: 150,
+        airbnb: 220,
+        hotel: 380
+      }
+    };
+
+    function updateCounter(field, change) {
+      if (field === 'persons') {
+        trip.persons = Math.max(1, trip.persons + change);
+        document.getElementById('personsVal').innerText = trip.persons;
+      } else if (field === 'days') {
+        trip.days = Math.max(1, trip.days + change);
+        document.getElementById('daysVal').innerText = trip.days;
+      }
+      calculateTripTotal();
+    }
+
+    function toggleFlightInput() {
+      const isChecked = document.getElementById('includeFlight').checked;
+      document.getElementById('flightInputContainer').style.display = isChecked ? 'flex' : 'none';
+      calculateTripTotal();
+    }
+
+    function selectStay(type) {
+      trip.stayType = type;
+      document.querySelectorAll('.radio-card').forEach(el => el.classList.remove('active'));
+      const activeInput = document.querySelector(`input[name="stayType"][value="${type}"]`);
+      if (activeInput) {
+        activeInput.checked = true;
+        activeInput.closest('.radio-card').classList.add('active');
+      }
+      calculateTripTotal();
+    }
+
+    function calculateTripTotal() {
+      const inrRate = parseFloat(document.getElementById('inrRate').value) || 26;
+      const persons = trip.persons;
+      const days = trip.days;
+      const nights = Math.max(1, days - 1);
+
+      let totalAed = 0;
+      let totalInr = 0;
+      let breakdown = [];
+
+      // 1. Flights
+      const includeFlight = document.getElementById('includeFlight').checked;
+      let flightInrTotal = 0;
+      if (includeFlight) {
+        const flightCostPerPax = parseFloat(document.getElementById('flightCostInr').value) || 0;
+        flightInrTotal = flightCostPerPax * persons;
+        const flightAedTotal = flightInrTotal / inrRate;
+        totalInr += flightInrTotal;
+        totalAed += flightAedTotal;
+        breakdown.push({ name: `Flights (${persons} Pax Roundtrip)`, aed: flightAedTotal, inr: flightInrTotal });
+      }
+
+      // 2. Stay
+      const nightlyAed = trip.stayRatesAed[trip.stayType] || 200;
+      const stayAedTotal = nightlyAed * nights;
+      const stayInrTotal = stayAedTotal * inrRate;
+      totalAed += stayAedTotal;
+      totalInr += stayInrTotal;
+      breakdown.push({ name: `Stay (${nights} Nights @ ${trip.stayType.toUpperCase()})`, aed: stayAedTotal, inr: stayInrTotal });
+
+      // 3. Travel Essentials
+      // Visa
+      if (document.getElementById('chk_visa').checked) {
+        const visaAed = 250 * persons;
+        const visaInr = visaAed * inrRate;
+        totalAed += visaAed;
+        totalInr += visaInr;
+        breakdown.push({ name: `Tourist Visas (${persons} Pax)`, aed: visaAed, inr: visaInr });
+      }
+
+      // NOL Metro Pass (AED 110 per person)
+      if (document.getElementById('chk_nol').checked) {
+        const nolAed = 110 * persons;
+        const nolInr = nolAed * inrRate;
+        totalAed += nolAed;
+        totalInr += nolInr;
+        breakdown.push({ name: `7-Day NOL Metro Passes (${persons} Pax)`, aed: nolAed, inr: nolInr });
+      }
+
+      // SIM Card (AED 49 per person)
+      if (document.getElementById('chk_sim').checked) {
+        const simAed = 49 * persons;
+        const simInr = simAed * inrRate;
+        totalAed += simAed;
+        totalInr += simInr;
+        breakdown.push({ name: `Tourist SIM Cards (${persons} Pax)`, aed: simAed, inr: simInr });
+      }
+
+      // 4. Activities
+      // Modern Abra Sightseeing Cruise (AED 150 / ₹3,900 from abratours.ae)
+      if (document.getElementById('chk_cruise').checked) {
+        const cruiseAed = 150 * persons;
+        const cruiseInr = cruiseAed * inrRate;
+        totalAed += cruiseAed;
+        totalInr += cruiseInr;
+        breakdown.push({ name: `Atlantis Scenic Cruise (${persons} Pax)`, aed: cruiseAed, inr: cruiseInr });
+      }
+
+      // Hummer Safari (AED 300)
+      if (document.getElementById('chk_safari').checked) {
+        const safariAed = 300 * persons;
+        const safariInr = safariAed * inrRate;
+        totalAed += safariAed;
+        totalInr += safariInr;
+        breakdown.push({ name: `Hummer Desert Safari (${persons} Pax)`, aed: safariAed, inr: safariInr });
+      }
+
+      // Burj Khalifa (AED 189 / ₹4,914 from atthetop.ae)
+      if (document.getElementById('chk_burj').checked) {
+        const burjAed = 189 * persons;
+        const burjInr = burjAed * inrRate;
+        totalAed += burjAed;
+        totalInr += burjInr;
+        breakdown.push({ name: `Burj Khalifa Levels 124 & 125 (${persons} Pax)`, aed: burjAed, inr: burjInr });
+      }
+
+      // Dubai Frame (AED 55)
+      if (document.getElementById('chk_frame').checked) {
+        const frameAed = 55 * persons;
+        const frameInr = frameAed * inrRate;
+        totalAed += frameAed;
+        totalInr += frameInr;
+        breakdown.push({ name: `Dubai Frame + Zabeel Park (${persons} Pax)`, aed: frameAed, inr: frameInr });
+      }
+
+      // Global Village (AED 25 entry + AED 30 dining = AED 55 / ₹1,430)
+      if (document.getElementById('chk_global').checked) {
+        const globalAed = 55 * persons;
+        const globalInr = globalAed * inrRate;
+        totalAed += globalAed;
+        totalInr += globalInr;
+        breakdown.push({ name: `Global Village Entry + Dining (${persons} Pax)`, aed: globalAed, inr: globalInr });
+      }
+
+      // Museum of the Future (AED 149)
+      if (document.getElementById('chk_museum').checked) {
+        const museumAed = 149 * persons;
+        const museumInr = museumAed * inrRate;
+        totalAed += museumAed;
+        totalInr += museumInr;
+        breakdown.push({ name: `Museum of the Future (${persons} Pax)`, aed: museumAed, inr: museumInr });
+      }
+
+      // Traditional Abra (AED 1 per pax)
+      const abraAed = 1 * persons;
+      const abraInr = abraAed * inrRate;
+      totalAed += abraAed;
+      totalInr += abraInr;
+      breakdown.push({ name: `Traditional Abra Creek Ride (${persons} Pax)`, aed: abraAed, inr: abraInr });
+
+      // Update Displays
+      const formattedInr = Math.round(totalInr).toLocaleString('en-IN');
+      const formattedAed = Math.round(totalAed).toLocaleString('en-US');
+      const perPersonInr = Math.round(totalInr / persons).toLocaleString('en-IN');
+
+      document.getElementById('grandInrDisplay').innerText = `₹${formattedInr}`;
+      document.getElementById('grandAedDisplay').innerText = `${formattedAed} AED`;
+      document.getElementById('perPersonDisplay').innerText = `₹${perPersonInr} / person`;
+
+      // Build Modal Content
+      let modalHtml = '';
+      breakdown.forEach(item => {
+        modalHtml += `
+          <div class="breakdown-row">
+            <span>${item.name}</span>
+            <span><strong>₹${Math.round(item.inr).toLocaleString('en-IN')}</strong> (${Math.round(item.aed)} AED)</span>
+          </div>
+        `;
+      });
+      modalHtml += `
+        <div class="breakdown-row breakdown-total">
+          <span>GRAND TOTAL (${persons} Pax)</span>
+          <span style="color:#047857">₹${formattedInr} / ${formattedAed} AED</span>
+        </div>
+        <div class="breakdown-row" style="border:none; padding-top:6px; color:var(--text-muted); font-size:12px;">
+          <span>Per Person Average:</span>
+          <span><strong>₹${perPersonInr}</strong></span>
+        </div>
+      `;
+      document.getElementById('modalSummaryContent').innerHTML = modalHtml;
+    }
+
+    function openBreakdownModal() {
+      document.getElementById('breakdownModal').classList.add('open');
+    }
+
+    function closeBreakdownModal(event) {
+      if (!event || event.target.id === 'breakdownModal' || event.target.classList.contains('close-btn')) {
+        document.getElementById('breakdownModal').classList.remove('open');
+      }
+    }
+
+    // Initialize on page load
+    window.onload = function() {
+      calculateTripTotal();
+    };
+  </script>
+</body>
+</html>
