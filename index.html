@@ -853,7 +853,58 @@
       </div>
     </section>
 
-    <!-- Section 5: Activities & Experiences -->
+    <!-- Section 5: Daily Food & Drinking Water -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon">🍽️</div>
+        <h2 class="section-title">Daily Food & Drinking Water</h2>
+      </div>
+
+      <div class="switch-row">
+        <div class="switch-info">
+          <div class="switch-name">Include Food & Water Allowance</div>
+          <div class="switch-desc">Calculated per person per day across entire trip duration</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="chk_food" onchange="toggleFoodSection()" checked />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div id="foodPlanContainer" style="margin-top: 10px;">
+        <div class="radio-card-group">
+          <label class="radio-card active" onclick="selectFoodPlan('budget')">
+            <input type="radio" name="foodPlan" value="budget" checked style="display:none" />
+            <div class="radio-details">
+              <div class="radio-title">Budget Food & Water (Recommended)</div>
+              <div class="radio-subtitle">Indian/Pakistani cafeterias, shawarma, chai + 3-4 bottled waters</div>
+            </div>
+            <div class="radio-price">
+              <div class="radio-price-val">AED 45</div>
+              <div class="radio-price-sub">₹1,170 / pax / day</div>
+            </div>
+          </label>
+
+          <label class="radio-card" onclick="selectFoodPlan('standard')">
+            <input type="radio" name="foodPlan" value="standard" style="display:none" />
+            <div class="radio-details">
+              <div class="radio-title">Standard / Food Courts & Casual AC</div>
+              <div class="radio-subtitle">Mall food courts (Al Baik, McDonald's), sit-down restaurants + beverages</div>
+            </div>
+            <div class="radio-price">
+              <div class="radio-price-val">AED 75</div>
+              <div class="radio-price-sub">₹1,950 / pax / day</div>
+            </div>
+          </label>
+        </div>
+
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 10px; margin-top: 10px; font-size: 11.5px; color: #166534;">
+          💧 <strong>Water & Food Tip:</strong> Tap water is non-drinkable in hotels/hostels. Always buy 1.5L water bottles from local supermarkets (Carrefour / Viva / Baqala) for only <strong>AED 1.50</strong> instead of AED 10+ at tourist spots!
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: Activities & Experiences -->
     <section class="section-card">
       <div class="section-header">
         <div class="section-icon">🎡</div>
@@ -1429,6 +1480,11 @@
         dorm: 150,
         airbnb: 220,
         hotel: 380
+      },
+      foodPlan: 'budget', // 'budget', 'standard'
+      foodRatesAed: {
+        budget: 45,
+        standard: 75
       }
     };
 
@@ -1449,10 +1505,27 @@
       calculateTripTotal();
     }
 
+    function toggleFoodSection() {
+      const isChecked = document.getElementById('chk_food').checked;
+      document.getElementById('foodPlanContainer').style.display = isChecked ? 'block' : 'none';
+      calculateTripTotal();
+    }
+
     function selectStay(type) {
       trip.stayType = type;
-      document.querySelectorAll('.radio-card').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('input[name="stayType"]').forEach(el => el.closest('.radio-card').classList.remove('active'));
       const activeInput = document.querySelector(`input[name="stayType"][value="${type}"]`);
+      if (activeInput) {
+        activeInput.checked = true;
+        activeInput.closest('.radio-card').classList.add('active');
+      }
+      calculateTripTotal();
+    }
+
+    function selectFoodPlan(type) {
+      trip.foodPlan = type;
+      document.querySelectorAll('input[name="foodPlan"]').forEach(el => el.closest('.radio-card').classList.remove('active'));
+      const activeInput = document.querySelector(`input[name="foodPlan"][value="${type}"]`);
       if (activeInput) {
         activeInput.checked = true;
         activeInput.closest('.radio-card').classList.add('active');
@@ -1491,6 +1564,17 @@
       breakdown.push({ name: `Stay (${nights} Nights @ ${trip.stayType.toUpperCase()})`, aed: stayAedTotal, inr: stayInrTotal });
 
       // 3. Travel Essentials
+      // Daily Food & Drinking Water
+      if (document.getElementById('chk_food').checked) {
+        const dailyRateAed = trip.foodRatesAed[trip.foodPlan] || 45;
+        const foodAedTotal = dailyRateAed * persons * days;
+        const foodInrTotal = foodAedTotal * inrRate;
+        totalAed += foodAedTotal;
+        totalInr += foodInrTotal;
+        const planLabel = trip.foodPlan === 'budget' ? 'Budget' : 'Standard';
+        breakdown.push({ name: `Food & Water (${planLabel}: ${persons} Pax × ${days} Days @ ${dailyRateAed} AED/day)`, aed: foodAedTotal, inr: foodInrTotal });
+      }
+
       // Visa
       if (document.getElementById('chk_visa').checked) {
         const visaAed = 250 * persons;
