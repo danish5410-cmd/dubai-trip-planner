@@ -728,7 +728,7 @@
           <div class="stepper-label">Days</div>
           <div class="stepper-controls">
             <button class="btn-step" onclick="updateCounter('days', -1)">−</button>
-            <span class="stepper-val" id="daysVal">5</span>
+            <input type="number" id="daysInput" value="5" min="1" max="90" oninput="onDaysInputChange(this.value)" style="width: 50px; text-align: center; font-size: 17px; font-weight: 800; border: none; background: transparent; color: var(--text-main);" />
             <button class="btn-step" onclick="updateCounter('days', 1)">+</button>
           </div>
         </div>
@@ -803,23 +803,29 @@
           </div>
         </label>
       </div>
+      <div style="margin-top: 10px; background: #fefce8; border: 1px solid #fef08a; border-radius: 10px; padding: 10px; font-size: 11.5px; color: #854d0e;">
+        🏨 <strong>Govt Tourism Dirham Fee Notice:</strong> Dubai hotels/apartments collect a statutory govt fee at check-in: AED 10 (₹260) to AED 20 (₹520) per bedroom per night (Dormitories/hostels generally exempt or minimal).
+      </div>
     </section>
 
-    <!-- Section 4: Mandatory Travel Essentials -->
+    <!-- Section 4: Mandatory Travel Essentials (Dynamic by Stay Days) -->
     <section class="section-card">
       <div class="section-header">
         <div class="section-icon">🛂</div>
-        <h2 class="section-title">Travel Essentials (Per Person)</h2>
+        <div style="flex:1;">
+          <h2 class="section-title">Travel Essentials (Per Person)</h2>
+          <div id="stayDurationBadge" style="font-size: 11px; color: var(--primary); font-weight: 700; margin-top: 2px;">⚡ Auto-configured for 5 Days Stay</div>
+        </div>
       </div>
 
-      <!-- Visa -->
+      <!-- Visa (Dynamic Tier) -->
       <div class="switch-row" style="border-bottom: 1px solid #f1f5f9;">
         <div class="switch-info">
-          <div class="switch-name">
-            14-Day Tourist Visa: AED 250 (₹6,500)
+          <div class="switch-name" id="visaTierTitle">
+            14-Day Tourist Visa: AED 250 <span style="color:#059669; font-weight:700;">(₹6,500)</span>
           </div>
-          <div class="switch-desc">
-            Processing approx ₹6,500 (~AED 250) or fast-track via <a href="https://amer247.com/uae-tourist-visa" target="_blank" class="pill-link">Amer247 ↗</a>
+          <div class="switch-desc" id="visaTierDesc">
+            Valid up to 14 days stay (~AED 250 / ₹6,500). Express/official via <a href="https://amer247.com/uae-tourist-visa" target="_blank" class="pill-link">Amer247 ↗</a>
           </div>
         </div>
         <label class="toggle-switch">
@@ -828,11 +834,15 @@
         </label>
       </div>
 
-      <!-- NOL Metro Pass -->
+      <!-- NOL Metro Pass (Dynamic Multi-pass) -->
       <div class="switch-row" style="border-bottom: 1px solid #f1f5f9;">
         <div class="switch-info">
-          <div class="switch-name">7-Day NOL Silver Pass: AED 110 (₹2,860)</div>
-          <div class="switch-desc">Unlimited travel on Dubai Metro, Tram & Buses</div>
+          <div class="switch-name" id="nolTierTitle">
+            7-Day NOL Silver Pass: AED 110 <span style="color:#059669; font-weight:700;">(₹2,860)</span>
+          </div>
+          <div class="switch-desc" id="nolTierDesc">
+            Unlimited travel on Dubai Metro, Tram & Buses for 7 days
+          </div>
         </div>
         <label class="toggle-switch">
           <input type="checkbox" id="chk_nol" onchange="calculateTripTotal()" checked />
@@ -840,16 +850,25 @@
         </label>
       </div>
 
-      <!-- Tourist SIM -->
+      <!-- Tourist SIM (Dynamic 28-day validity recharge) -->
       <div class="switch-row">
         <div class="switch-info">
-          <div class="switch-name">Tourist SIM Card: AED 49 (₹1,274)</div>
-          <div class="switch-desc">4GB 5G Data + 30 Local/Intl Mins (~USD 13.35)</div>
+          <div class="switch-name" id="simTierTitle">
+            Tourist SIM Card: AED 49 <span style="color:#059669; font-weight:700;">(₹1,274)</span>
+          </div>
+          <div class="switch-desc" id="simTierDesc">
+            4GB 5G Data + 30 Mins Call (28-day base pack)
+          </div>
         </div>
         <label class="toggle-switch">
           <input type="checkbox" id="chk_sim" onchange="calculateTripTotal()" checked />
           <span class="slider"></span>
         </label>
+      </div>
+
+      <!-- Dynamic Duration Alert Box -->
+      <div id="dynamicDurationNotice" style="margin-top: 10px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 10px; font-size: 11.5px; color: #1e40af;">
+        ℹ️ <strong>Smart Duration Rule:</strong> Visa (14-Day vs 30-Day vs 60-Day), NOL 7-day multi-passes, and SIM validity cycles update dynamically based on your selected trip duration.
       </div>
     </section>
 
@@ -1493,9 +1512,18 @@
         trip.persons = Math.max(1, trip.persons + change);
         document.getElementById('personsVal').innerText = trip.persons;
       } else if (field === 'days') {
-        trip.days = Math.max(1, trip.days + change);
-        document.getElementById('daysVal').innerText = trip.days;
+        trip.days = Math.max(1, Math.min(90, trip.days + change));
+        const daysInput = document.getElementById('daysInput');
+        if (daysInput) daysInput.value = trip.days;
       }
+      calculateTripTotal();
+    }
+
+    function onDaysInputChange(val) {
+      let parsed = parseInt(val, 10);
+      if (isNaN(parsed) || parsed < 1) parsed = 1;
+      if (parsed > 90) parsed = 90;
+      trip.days = parsed;
       calculateTripTotal();
     }
 
@@ -1563,43 +1591,109 @@
       totalInr += stayInrTotal;
       breakdown.push({ name: `Stay (${nights} Nights @ ${trip.stayType.toUpperCase()})`, aed: stayAedTotal, inr: stayInrTotal });
 
-      // 3. Travel Essentials
+      // Update Dynamic Duration Header Badge
+      const badgeEl = document.getElementById('stayDurationBadge');
+      if (badgeEl) {
+        badgeEl.innerText = `⚡ Auto-configured for ${days} Days Stay (${nights} Nights)`;
+      }
+
+      // 3. Travel Essentials (Dynamically Calculated based on Stay Days)
       // Daily Food & Drinking Water
-      if (document.getElementById('chk_food').checked) {
+      if (document.getElementById('chk_food') && document.getElementById('chk_food').checked) {
         const dailyRateAed = trip.foodRatesAed[trip.foodPlan] || 45;
         const foodAedTotal = dailyRateAed * persons * days;
         const foodInrTotal = foodAedTotal * inrRate;
         totalAed += foodAedTotal;
         totalInr += foodInrTotal;
         const planLabel = trip.foodPlan === 'budget' ? 'Budget' : 'Standard';
-        breakdown.push({ name: `Food & Water (${planLabel}: ${persons} Pax × ${days} Days @ ${dailyRateAed} AED/day)`, aed: foodAedTotal, inr: foodInrTotal });
+        breakdown.push({ name: `Food & Water (${planLabel}: ${persons} Pax × ${days} Days @ ${dailyRateAed} AED [₹${Math.round(dailyRateAed * inrRate)}]/day)`, aed: foodAedTotal, inr: foodInrTotal });
       }
 
-      // Visa
-      if (document.getElementById('chk_visa').checked) {
-        const visaAed = 250 * persons;
+      // Dynamic Visa Calculation Tier
+      let visaTierName = '';
+      let visaPerPaxAed = 250;
+      if (days <= 14) {
+        visaTierName = '14-Day Tourist Visa';
+        visaPerPaxAed = 250; // ~₹6,500
+      } else if (days <= 30) {
+        visaTierName = '30-Day Tourist Visa (Single Entry)';
+        visaPerPaxAed = 350; // ~₹9,100
+      } else {
+        visaTierName = '60-Day Tourist Visa (Long Stay)';
+        visaPerPaxAed = 550; // ~₹14,300
+      }
+      const visaPerPaxInr = Math.round(visaPerPaxAed * inrRate);
+
+      // Update Visa UI Elements
+      const visaTitleEl = document.getElementById('visaTierTitle');
+      const visaDescEl = document.getElementById('visaTierDesc');
+      if (visaTitleEl) {
+        visaTitleEl.innerHTML = `${visaTierName}: AED ${visaPerPaxAed} <span style="color:#059669; font-weight:700;">(₹${visaPerPaxInr.toLocaleString('en-IN')})</span>`;
+      }
+      if (visaDescEl) {
+        if (days <= 14) {
+          visaDescEl.innerHTML = `Short trip (≤14 days) • Standard Tourist Visa (~AED 250 / ₹${visaPerPaxInr.toLocaleString('en-IN')}). Express/official via <a href="https://amer247.com/uae-tourist-visa" target="_blank" class="pill-link">Amer247 ↗</a>`;
+        } else if (days <= 30) {
+          visaDescEl.innerHTML = `Extended trip (${days} days) • Upgraded to 30-Day Visa (~AED 350 / ₹${visaPerPaxInr.toLocaleString('en-IN')}) to prevent illegal overstay fines (AED 50/day).`;
+        } else {
+          visaDescEl.innerHTML = `Long-stay trip (${days} days) • Upgraded to 60-Day Tourist Visa (~AED 550 / ₹${visaPerPaxInr.toLocaleString('en-IN')}). Official UAE ICP/GDRFA approved.`;
+        }
+      }
+
+      if (document.getElementById('chk_visa') && document.getElementById('chk_visa').checked) {
+        const visaAed = visaPerPaxAed * persons;
         const visaInr = visaAed * inrRate;
         totalAed += visaAed;
         totalInr += visaInr;
-        breakdown.push({ name: `Tourist Visas (${persons} Pax)`, aed: visaAed, inr: visaInr });
+        breakdown.push({ name: `${visaTierName} (${persons} Pax @ AED ${visaPerPaxAed} [₹${visaPerPaxInr.toLocaleString('en-IN')}])`, aed: visaAed, inr: visaInr });
       }
 
-      // NOL Metro Pass (AED 110 per person)
-      if (document.getElementById('chk_nol').checked) {
-        const nolAed = 110 * persons;
+      // Dynamic NOL Metro Pass Calculation (7-Day All-Zone passes required for stay duration)
+      const nolPassCount = Math.ceil(days / 7);
+      const nolPerPaxAed = 110 * nolPassCount;
+      const nolPerPaxInr = Math.round(nolPerPaxAed * inrRate);
+
+      // Update NOL UI Elements
+      const nolTitleEl = document.getElementById('nolTierTitle');
+      const nolDescEl = document.getElementById('nolTierDesc');
+      if (nolTitleEl) {
+        const passText = nolPassCount === 1 ? '7-Day NOL Silver Pass' : `${nolPassCount} × 7-Day NOL Passes (${nolPassCount * 7} Days)`;
+        nolTitleEl.innerHTML = `${passText}: AED ${nolPerPaxAed} <span style="color:#059669; font-weight:700;">(₹${nolPerPaxInr.toLocaleString('en-IN')})</span>`;
+      }
+      if (nolDescEl) {
+        nolDescEl.innerHTML = `Covers ${days} days travel (${nolPassCount} consecutive 7-day passes @ AED 110/pass) for unlimited Metro, Tram & Buses`;
+      }
+
+      if (document.getElementById('chk_nol') && document.getElementById('chk_nol').checked) {
+        const nolAed = nolPerPaxAed * persons;
         const nolInr = nolAed * inrRate;
         totalAed += nolAed;
         totalInr += nolInr;
-        breakdown.push({ name: `7-Day NOL Metro Passes (${persons} Pax)`, aed: nolAed, inr: nolInr });
+        breakdown.push({ name: `NOL Metro Passes (${nolPassCount} × 7-Day for ${days} Days, ${persons} Pax)`, aed: nolAed, inr: nolInr });
       }
 
-      // SIM Card (AED 49 per person)
-      if (document.getElementById('chk_sim').checked) {
-        const simAed = 49 * persons;
+      // Dynamic Tourist SIM Card Calculation (Base 28-day pack AED 49 + 30-day top-up if >28 days)
+      const simCycleCount = Math.ceil(days / 28);
+      const simPerPaxAed = 49 * simCycleCount;
+      const simPerPaxInr = Math.round(simPerPaxAed * inrRate);
+
+      // Update SIM UI Elements
+      const simTitleEl = document.getElementById('simTierTitle');
+      const simDescEl = document.getElementById('simTierDesc');
+      if (simTitleEl) {
+        const cycleText = simCycleCount === 1 ? 'Tourist SIM Card (28 Days)' : `Tourist SIM + Extension (${simCycleCount} Packs)`;
+        simTitleEl.innerHTML = `${cycleText}: AED ${simPerPaxAed} <span style="color:#059669; font-weight:700;">(₹${simPerPaxInr.toLocaleString('en-IN')})</span>`;
+      }
+      if (simDescEl) {
+        simDescEl.innerHTML = `Base pack valid 28 days (4GB 5G + 30 Mins). ${simCycleCount > 1 ? `Extended with ${simCycleCount - 1} monthly recharge for ${days} days stay.` : 'Covers entire trip.'}`;
+      }
+
+      if (document.getElementById('chk_sim') && document.getElementById('chk_sim').checked) {
+        const simAed = simPerPaxAed * persons;
         const simInr = simAed * inrRate;
         totalAed += simAed;
         totalInr += simInr;
-        breakdown.push({ name: `Tourist SIM Cards (${persons} Pax)`, aed: simAed, inr: simInr });
+        breakdown.push({ name: `Tourist SIM & Data (${persons} Pax for ${days} Days, ${simCycleCount} cycle)`, aed: simAed, inr: simInr });
       }
 
       // 4. Activities
