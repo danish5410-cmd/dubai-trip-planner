@@ -760,30 +760,54 @@
       </div>
     </section>
 
-    <!-- Section 3: Accommodation -->
+    <!-- Section 3: Accommodation (Updated Verified Market Rates & Specific Locations) -->
     <section class="section-card">
       <div class="section-header">
         <div class="section-icon">🏨</div>
-        <h2 class="section-title">Stay Type (Per Night)</h2>
+        <div>
+          <h2 class="section-title">Stay Type (Per Night)</h2>
+          <div style="font-size: 11px; color: var(--text-muted);">Verified booking rates for Capsule Pods, Budget Hotels & Apartments</div>
+        </div>
       </div>
       <div class="radio-card-group">
-        <label class="radio-card" onclick="selectStay('dorm')">
-          <input type="radio" name="stayType" value="dorm" style="display:none" />
+        <!-- 1. Capsule Pod / Dorm Bed -->
+        <label class="radio-card" onclick="selectStay('capsule')">
+          <input type="radio" name="stayType" value="capsule" style="display:none" />
           <div class="radio-details">
-            <div class="radio-title">Hostel / Dormitory Bed</div>
-            <div class="radio-subtitle">Deira, Bur Dubai budget stays (AED 120–300 / $33–82)</div>
+            <div class="radio-title">Capsule Hotel Pod / Dormitory Bed</div>
+            <div class="radio-subtitle">
+              📍 <strong>Bur Dubai & Deira:</strong> WeStay Capsule (Al Ghubaiba), Dubai POD (Al Rolla / Burjuman), Capsule in Hostel (Al Baraha Deira). Includes AC pod, privacy curtain, WiFi, locker & shared kitchen.
+            </div>
           </div>
           <div class="radio-price">
-            <div class="radio-price-val">AED 150</div>
-            <div class="radio-price-sub">₹3,900 / night</div>
+            <div class="radio-price-val">AED 55</div>
+            <div class="radio-price-sub">₹1,430 / night / bed</div>
           </div>
         </label>
 
+        <!-- 2. Separate Budget Hotel Room -->
+        <label class="radio-card" onclick="selectStay('budget_hotel')">
+          <input type="radio" name="stayType" value="budget_hotel" style="display:none" />
+          <div class="radio-details">
+            <div class="radio-title">Separate Budget Hotel Room (Private)</div>
+            <div class="radio-subtitle">
+              📍 <strong>Deira & Bur Dubai:</strong> Mount Sinai Hotel, Rolla Suites, Citymax Bur Dubai, Al Rigga & Union Metro budget cluster. Private AC room with attached bathroom.
+            </div>
+          </div>
+          <div class="radio-price">
+            <div class="radio-price-val">AED 150</div>
+            <div class="radio-price-sub">₹3,900 / night / room</div>
+          </div>
+        </label>
+
+        <!-- 3. Airbnb / Shared Apartment -->
         <label class="radio-card active" onclick="selectStay('airbnb')">
           <input type="radio" name="stayType" value="airbnb" checked style="display:none" />
           <div class="radio-details">
-            <div class="radio-title">Airbnb / Shared Apartment</div>
-            <div class="radio-subtitle">Cost-effective for couples & friends</div>
+            <div class="radio-title">Airbnb / 1BHK Serviced Apartment</div>
+            <div class="radio-subtitle">
+              📍 <strong>Downtown / Marina / Al Barsha:</strong> Full apartment with private kitchen & living space for families, couples & groups.
+            </div>
           </div>
           <div class="radio-price">
             <div class="radio-price-val">AED 220</div>
@@ -791,11 +815,14 @@
           </div>
         </label>
 
+        <!-- 4. Standard 3★ / 4★ Hotel Room -->
         <label class="radio-card" onclick="selectStay('hotel')">
           <input type="radio" name="stayType" value="hotel" style="display:none" />
           <div class="radio-details">
-            <div class="radio-title">3★ / 4★ Hotel Room</div>
-            <div class="radio-subtitle">Private hotel room with daily housekeeping</div>
+            <div class="radio-title">3★ / 4★ Premium Hotel Room</div>
+            <div class="radio-subtitle">
+              📍 <strong>City Center & Sheikh Zayed Road:</strong> Daily housekeeping, swimming pool, gym & central metro connectivity.
+            </div>
           </div>
           <div class="radio-price">
             <div class="radio-price-val">AED 380</div>
@@ -803,8 +830,14 @@
           </div>
         </label>
       </div>
-      <div style="margin-top: 10px; background: #fefce8; border: 1px solid #fef08a; border-radius: 10px; padding: 10px; font-size: 11.5px; color: #854d0e;">
-        🏨 <strong>Govt Tourism Dirham Fee Notice:</strong> Dubai hotels/apartments collect a statutory govt fee at check-in: AED 10 (₹260) to AED 20 (₹520) per bedroom per night (Dormitories/hostels generally exempt or minimal).
+
+      <!-- Quick Booking Reference Links & Tourism Tax -->
+      <div style="margin-top: 10px; background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 10px; font-size: 11px; color: var(--text-muted);">
+        🔍 <strong>Booking Portals:</strong> Compare live pod & hotel rates on <a href="https://www.booking.com/city/ae/dubai.html" target="_blank" class="pill-link">Booking.com ↗</a> or <a href="https://www.agoda.com/city/dubai-ae.html" target="_blank" class="pill-link">Agoda App (Mobile Secret Deals) ↗</a>
+      </div>
+
+      <div style="margin-top: 8px; background: #fefce8; border: 1px solid #fef08a; border-radius: 10px; padding: 10px; font-size: 11.5px; color: #854d0e;">
+        🏨 <strong>Govt Tourism Dirham Fee Notice:</strong> Dubai hotels/apartments collect a statutory govt fee at check-in: AED 10 (₹260) to AED 20 (₹520) per bedroom per night (Capsule pods/hostel beds are exempt or minimal).
       </div>
     </section>
 
@@ -1544,11 +1577,12 @@
     let trip = {
       persons: 2,
       days: 5,
-      stayType: 'airbnb', // 'dorm', 'airbnb', 'hotel'
+      stayType: 'airbnb', // 'capsule', 'budget_hotel', 'airbnb', 'hotel'
       stayRatesAed: {
-        dorm: 150,
-        airbnb: 220,
-        hotel: 380
+        capsule: 55,       // Capsule pod in Bur Dubai / Deira (AED 55 / ₹1,430)
+        budget_hotel: 150, // Separate Private Budget Hotel in Deira / Bur Dubai (AED 150 / ₹3,900)
+        airbnb: 220,       // Airbnb Apartment (AED 220 / ₹5,720)
+        hotel: 380         // 3/4-Star Hotel (AED 380 / ₹9,880)
       },
       foodPlan: 'budget', // 'budget', 'standard'
       foodRatesAed: {
@@ -1637,9 +1671,21 @@
       const nightlyAed = trip.stayRatesAed[trip.stayType] || 200;
       const stayAedTotal = nightlyAed * nights;
       const stayInrTotal = stayAedTotal * inrRate;
-      totalAed += stayAedTotal;
-      totalInr += stayInrTotal;
-      breakdown.push({ name: `Stay (${nights} Nights @ ${trip.stayType.toUpperCase()})`, aed: stayAedTotal, inr: stayInrTotal });
+      let stayLabel = 'Airbnb Apartment';
+      if (trip.stayType === 'capsule') {
+        const capsuleTotalAed = nightlyAed * nights * persons;
+        const capsuleTotalInr = capsuleTotalAed * inrRate;
+        totalAed += capsuleTotalAed;
+        totalInr += capsuleTotalInr;
+        breakdown.push({ name: `Stay: Capsule Pod / Dorm (${persons} Pax × ${nights} Nights @ AED 55 [₹1,430]/night)`, aed: capsuleTotalAed, inr: capsuleTotalInr });
+      } else {
+        if (trip.stayType === 'budget_hotel') stayLabel = 'Separate Budget Hotel (Deira/Bur Dubai)';
+        else if (trip.stayType === 'airbnb') stayLabel = 'Airbnb / Serviced Apartment';
+        else if (trip.stayType === 'hotel') stayLabel = '3★/4★ Hotel Room';
+        totalAed += stayAedTotal;
+        totalInr += stayInrTotal;
+        breakdown.push({ name: `Stay: ${stayLabel} (${nights} Nights @ AED ${nightlyAed} [₹${Math.round(nightlyAed * inrRate)}]/night)`, aed: stayAedTotal, inr: stayInrTotal });
+      }
 
       // Update Dynamic Duration Header Badge
       const badgeEl = document.getElementById('stayDurationBadge');
