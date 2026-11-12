@@ -770,11 +770,11 @@
         </div>
       </div>
       <div class="radio-card-group">
-        <!-- 1. Capsule Pod / Dorm Bed -->
+        <!-- 1. Capsule Hotel Pod -->
         <label class="radio-card" onclick="selectStay('capsule')">
           <input type="radio" name="stayType" value="capsule" style="display:none" />
           <div class="radio-details">
-            <div class="radio-title">Capsule Hotel Pod / Dormitory Bed</div>
+            <div class="radio-title">Capsule Hotel Pod</div>
             <div class="radio-subtitle">
               📍 <strong>Bur Dubai & Deira:</strong> WeStay Capsule (Al Ghubaiba), Dubai POD (Al Rolla / Burjuman), Capsule in Hostel (Al Baraha Deira). Includes AC pod, privacy curtain, WiFi, locker & shared kitchen.
             </div>
@@ -782,6 +782,24 @@
           <div class="radio-price">
             <div class="radio-price-val">AED 55</div>
             <div class="radio-price-sub">₹1,430 / night / bed</div>
+          </div>
+        </label>
+
+        <!-- 1B. Monthly Dormitory Bed (Dynamically spawned when cheaper than Capsule: ≥13 Days) -->
+        <label class="radio-card" id="dormitoryCard" onclick="selectStay('dormitory')" style="display:none; border-color: #10b981; background: #f0fdf4;">
+          <input type="radio" name="stayType" value="dormitory" style="display:none" />
+          <div class="radio-details">
+            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+              <div class="radio-title" style="color: #065f46;">Monthly Dormitory Bed (Deira / Bur Dubai)</div>
+              <span class="badge" style="background: #059669; color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px;">⚡ High-Stay Unlocked (Cheaper than Capsule)</span>
+            </div>
+            <div class="radio-subtitle" style="color: #047857;">
+              📍 <strong>Wholesale Spice & Commodity Hub (Deira / Bur Dubai):</strong> Shared dormitory bed, all bills included (DEWA + WiFi). Automatically unlocked because staying 13+ days costs less than daily capsule pods!
+            </div>
+          </div>
+          <div class="radio-price">
+            <div class="radio-price-val" id="dormPriceAedDisplay" style="color: #059669;">AED 700</div>
+            <div class="radio-price-sub" id="dormPriceSubDisplay">₹18,200 / month</div>
           </div>
         </label>
 
@@ -887,10 +905,10 @@
       <div class="switch-row">
         <div class="switch-info">
           <div class="switch-name" id="simTierTitle">
-            Tourist SIM Card: AED 49 <span style="color:#059669; font-weight:700;">(₹1,274)</span>
+            du Tourist SIM Card: AED 99 <span style="color:#059669; font-weight:700;">(₹2,574)</span>
           </div>
           <div class="switch-desc" id="simTierDesc">
-            4GB 5G Data + 30 Mins Call (28-day base pack)
+            du 10GB 5G Data + 60 Local & Intl. Mins (28-day base pack)
           </div>
         </div>
         <label class="toggle-switch">
@@ -925,27 +943,55 @@
 
       <div id="foodPlanContainer" style="margin-top: 10px;">
         <div class="radio-card-group">
-          <label class="radio-card active" onclick="selectFoodPlan('budget')">
-            <input type="radio" name="foodPlan" value="budget" checked style="display:none" />
+          <!-- Option 1: Self-Cooking / Tiffin Mess -->
+          <label class="radio-card" onclick="selectFoodPlan('tiffin')">
+            <input type="radio" name="foodPlan" value="tiffin" style="display:none" />
             <div class="radio-details">
-              <div class="radio-title">Budget Food & Water (Recommended)</div>
-              <div class="radio-subtitle">Indian/Pakistani cafeterias, shawarma, chai + 3-4 bottled waters</div>
+              <div class="radio-title">Option 1: Self-Cooking / Monthly Dabba (Tiffin)</div>
+              <div class="radio-subtitle">Shared kitchen cooking (rice, dal, eggs, Maggi) or Indian monthly tiffin mess delivered 2x daily (AED 450/month).</div>
+            </div>
+            <div class="radio-price">
+              <div class="radio-price-val">AED 15</div>
+              <div class="radio-price-sub">₹390 / pax / day</div>
+            </div>
+          </label>
+
+          <!-- Option 2: Budget Cafeteria -->
+          <label class="radio-card active" onclick="selectFoodPlan('budget_cafeteria')">
+            <input type="radio" name="foodPlan" value="budget_cafeteria" checked style="display:none" />
+            <div class="radio-details">
+              <div class="radio-title">Option 2: Budget Cafeteria & Mess (Recommended)</div>
+              <div class="radio-subtitle">Local cafeterias in Deira/Bur Dubai. Breakfast: Chai + Paratha/Omelette (AED 5–6). Lunch/Dinner: Dal-Chawal or Biryani/Roti combo (AED 9–10).</div>
+            </div>
+            <div class="radio-price">
+              <div class="radio-price-val">AED 24</div>
+              <div class="radio-price-sub">₹624 / pax / day</div>
+            </div>
+          </label>
+
+          <!-- Option 3: Economical Dining -->
+          <label class="radio-card" onclick="selectFoodPlan('economical')">
+            <input type="radio" name="foodPlan" value="economical" style="display:none" />
+            <div class="radio-details">
+              <div class="radio-title">Option 3: Economical Restaurant Dining</div>
+              <div class="radio-subtitle">Small Indian/Pakistani sit-down restaurants. Veg/Non-veg Thali, curry + roti, fresh juice, evening tea & snacks.</div>
+            </div>
+            <div class="radio-price">
+              <div class="radio-price-val">AED 30</div>
+              <div class="radio-price-sub">₹780 / pax / day</div>
+            </div>
+          </label>
+
+          <!-- Option 4: Business & Comfortable Dining -->
+          <label class="radio-card" onclick="selectFoodPlan('comfortable')">
+            <input type="radio" name="foodPlan" value="comfortable" style="display:none" />
+            <div class="radio-details">
+              <div class="radio-title">Option 4: Business & Comfortable Dining</div>
+              <div class="radio-subtitle">Casual AC dining, food courts (Al Baik, McDonald's), daily bottled water + cafe tea/refreshments with trade clients.</div>
             </div>
             <div class="radio-price">
               <div class="radio-price-val">AED 45</div>
               <div class="radio-price-sub">₹1,170 / pax / day</div>
-            </div>
-          </label>
-
-          <label class="radio-card" onclick="selectFoodPlan('standard')">
-            <input type="radio" name="foodPlan" value="standard" style="display:none" />
-            <div class="radio-details">
-              <div class="radio-title">Standard / Food Courts & Casual AC</div>
-              <div class="radio-subtitle">Mall food courts (Al Baik, McDonald's), sit-down restaurants + beverages</div>
-            </div>
-            <div class="radio-price">
-              <div class="radio-price-val">AED 75</div>
-              <div class="radio-price-sub">₹1,950 / pax / day</div>
             </div>
           </label>
         </div>
@@ -1569,6 +1615,79 @@
       </div>
     </section>
 
+    <!-- Section 9: 60-Day Packing & Dubai Customs Checklist -->
+    <section class="section-card" id="packingChecklistSection" style="border: 1.5px solid #10b981; background: #ffffff;">
+      <div class="section-header">
+        <div class="section-icon" style="background: #10b981; color: #ffffff;">🧳</div>
+        <div style="flex:1;">
+          <h2 class="section-title">2-Month Trip Packing & Dubai Customs Checklist</h2>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+            Strict airport security compliance: Cabin vs. Checked luggage separation & commercial sample clearance
+          </div>
+        </div>
+      </div>
+
+      <!-- Critical Warnings Banner -->
+      <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 12px; margin-bottom: 14px; font-size: 11.5px; color: #991b1b; line-height: 1.5;">
+        ⚠️ <strong>Dubai Airport & Airline Security Rules:</strong>
+        <ul style="margin: 6px 0 0 16px; padding: 0;">
+          <li><strong>Powerbank:</strong> Cabin Baggage ONLY (Banned in checked bags).</li>
+          <li><strong>Sunscreen 500ml, Knives & Nail Cutters:</strong> Checked Luggage ONLY (Confiscated at cabin security).</li>
+          <li><strong>Medicines (60 Days):</strong> Carry original signed & stamped doctor's prescription matching passport name.</li>
+          <li><strong>Samples (Chilli & Dollar Chana):</strong> Carry Phytosanitary & lab certs + company letter of "No Commercial Value".</li>
+        </ul>
+      </div>
+
+      <!-- Category 1: Cabin / Hand Baggage -->
+      <div style="margin-bottom: 16px;">
+        <h4 style="font-size: 13px; font-weight: 700; color: #0284c7; margin-bottom: 8px;">✈️ 1. Cabin / Hand Baggage (Flight Essentials & High Value)</h4>
+        <div style="display: grid; gap: 6px; font-size: 12px;">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" checked /> <span><strong>Passport & 60-Day UAE Visa</strong> (Original + 2 printed copies)</span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" checked /> <span><strong>Powerbank</strong> (≤100Wh / 27,000mAh) — Strictly Cabin Only</span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" checked /> <span><strong>Original Doctor's Prescription</strong> (For all 60-day inhalers & tablets)</span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" checked /> <span><strong>Emergency 1 Aerocort Inhaler / Pump</strong> (Kept accessible in flight)</span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" checked /> <span><strong>Sample Certificates & Sample Letter</strong> (Phytosanitary & "No Commercial Value" letter)</span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" checked /> <span><strong>Visa Credit/Debit Card & Cash</strong> (USD/AED for arrival)</span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" checked /> <span><strong>Mobile Phone, Laptop & Chargers</strong></span></label>
+        </div>
+      </div>
+
+      <!-- Category 2: Checked Baggage -->
+      <div style="margin-bottom: 16px;">
+        <h4 style="font-size: 13px; font-weight: 700; color: #059669; margin-bottom: 8px;">📦 2. Checked Baggage (Hold Luggage & Heavy Load)</h4>
+        <div style="display: grid; gap: 6px; font-size: 12px;">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" /> <span><strong>Sunscreen 500 ml</strong> (Tape cap & seal in ziplock — strictly checked luggage)</span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" /> <span><strong>Mosquito Repellent Odomos Cream (4 tubes)</strong> (Sealed in pouch)</span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" /> <span><strong>Toothbrushes (4 pcs) & Toothpaste</strong></span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" /> <span><strong>Levocetirizine + Montelukast (60 tablets)</strong></span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" /> <span><strong>Fluticasone Nasal Spray / Inhaler (4 units)</strong></span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" /> <span><strong>Aerocort Rotacaps & Rotahaler Device + Extra Pump</strong></span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" /> <span><strong>Olopatadine Eye Drops & First Aid / Bandages</strong></span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" /> <span><strong>Product Trade Samples:</strong> Red Chilli (Vacuum sealed) & Dollar Chana</span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" /> <span><strong>Kitchen Knife & Spoon</strong> (Checked baggage only)</span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" /> <span><strong>Microwave-Safe Glass Container</strong> (Bubble-wrapped securely)</span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" /> <span><strong>Manual 5-Gallon Water Can Dispenser Pump</strong></span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" /> <span><strong>Lightweight Travel Clothes Iron & Hand Luggage Scale</strong></span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" /> <span><strong>Maggi Instant Noodles & Dry Sealed Masalas</strong></span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" /> <span><strong>Soap, Shampoo & Laundry Detergent Pouches</strong></span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" /> <span><strong>Combs (4 pcs) & Nail Cutter</strong></span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" /> <span><strong>Type-G (UK 3-Pin) Universal Travel Adapter & Power Strip</strong></span></label>
+        </div>
+      </div>
+
+      <!-- Category 3: Dormitory & Living Essentials -->
+      <div>
+        <h4 style="font-size: 13px; font-weight: 700; color: #d97706; margin-bottom: 8px;">🏢 3. Dormitory / Bed-Space Living Essentials</h4>
+        <div style="display: grid; gap: 6px; font-size: 12px;">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" /> <span><strong>2–3 Small Solid Padlocks with keys</strong> (Crucial for locker & luggage security)</span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" /> <span><strong>Shower Flip-Flops / Rubber Chappals</strong> (Hygiene for shared washrooms)</span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" /> <span><strong>Earplugs & Sleeping Eye Mask</strong> (For restful sleep with roommates)</span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" /> <span><strong>Personal Light Bedsheet & Pillowcase</strong></span></label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" /> <span><strong>Light AC Quilt / Fleece Blanket & Thermal Innerwarmer</strong></span></label>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- Sticky Bottom Calculation Bar -->
@@ -1605,17 +1724,20 @@
     let trip = {
       persons: 2,
       days: 5,
-      stayType: 'airbnb', // 'capsule', 'budget_hotel', 'airbnb', 'hotel'
+      stayType: 'capsule', // 'capsule', 'dormitory', 'budget_hotel', 'airbnb', 'hotel'
       stayRatesAed: {
         capsule: 55,       // Capsule pod in Bur Dubai / Deira (AED 55 / ₹1,430)
+        dormitory: 700,    // Monthly Dormitory Bed in Deira / Bur Dubai (AED 700 / mo)
         budget_hotel: 150, // Separate Private Budget Hotel in Deira / Bur Dubai (AED 150 / ₹3,900)
         airbnb: 220,       // Airbnb Apartment (AED 220 / ₹5,720)
         hotel: 380         // 3/4-Star Hotel (AED 380 / ₹9,880)
       },
-      foodPlan: 'budget', // 'budget', 'standard'
+      foodPlan: 'budget_cafeteria', // 'tiffin', 'budget_cafeteria', 'economical', 'comfortable'
       foodRatesAed: {
-        budget: 45,
-        standard: 75
+        tiffin: 15,
+        budget_cafeteria: 24,
+        economical: 30,
+        comfortable: 45
       }
     };
 
@@ -1700,12 +1822,44 @@
       const stayAedTotal = nightlyAed * nights;
       const stayInrTotal = stayAedTotal * inrRate;
       let stayLabel = 'Airbnb Apartment';
+
+      // Check break-even between Capsule Hotel (AED 55/night) and Monthly Dormitory (min AED 700/mo)
+      const capsuleTotalCost = 55 * nights;
+      const dormMonths = Math.max(1, Math.ceil(days / 30));
+      const dormTotalCost = 700 * dormMonths;
+      const dormCard = document.getElementById('dormitoryCard');
+      const dormPriceValEl = document.getElementById('dormPriceAedDisplay');
+      const dormPriceSubEl = document.getElementById('dormPriceSubDisplay');
+
+      // Rule: Do not spawn dormitory bed until it costs less than capsule hotel (Break-even at >= 13 days)
+      if (capsuleTotalCost > dormTotalCost) {
+        if (dormCard) {
+          dormCard.style.display = 'flex';
+          if (dormPriceValEl) dormPriceValEl.innerText = `AED ${dormTotalCost}`;
+          if (dormPriceSubEl) dormPriceSubEl.innerText = `₹${Math.round(dormTotalCost * inrRate).toLocaleString('en-IN')} (${dormMonths} mo @ AED 700)`;
+        }
+      } else {
+        if (dormCard) {
+          dormCard.style.display = 'none';
+          if (trip.stayType === 'dormitory') {
+            selectStay('capsule');
+            return;
+          }
+        }
+      }
+
       if (trip.stayType === 'capsule') {
-        const capsuleTotalAed = nightlyAed * nights * persons;
+        const capsuleTotalAed = 55 * nights * persons;
         const capsuleTotalInr = capsuleTotalAed * inrRate;
         totalAed += capsuleTotalAed;
         totalInr += capsuleTotalInr;
-        breakdown.push({ name: `Stay: Capsule Pod / Dorm (${persons} Pax × ${nights} Nights @ AED 55 [₹1,430]/night)`, aed: capsuleTotalAed, inr: capsuleTotalInr });
+        breakdown.push({ name: `Stay: Capsule Hotel Pod (${persons} Pax × ${nights} Nights @ AED 55 [₹${Math.round(55 * inrRate)}]/night)`, aed: capsuleTotalAed, inr: capsuleTotalInr });
+      } else if (trip.stayType === 'dormitory') {
+        const dormAed = dormTotalCost * persons;
+        const dormInr = dormAed * inrRate;
+        totalAed += dormAed;
+        totalInr += dormInr;
+        breakdown.push({ name: `Stay: Monthly Dormitory Bed (${persons} Pax × ${dormMonths} Month(s) [${days} Days] @ AED 700/mo [₹${Math.round(700 * inrRate).toLocaleString('en-IN')}])`, aed: dormAed, inr: dormInr });
       } else {
         if (trip.stayType === 'budget_hotel') stayLabel = 'Separate Budget Hotel (Deira/Bur Dubai)';
         else if (trip.stayType === 'airbnb') stayLabel = 'Airbnb / Serviced Apartment';
@@ -1724,12 +1878,16 @@
       // 3. Travel Essentials (Dynamically Calculated based on Stay Days)
       // Daily Food & Drinking Water
       if (document.getElementById('chk_food') && document.getElementById('chk_food').checked) {
-        const dailyRateAed = trip.foodRatesAed[trip.foodPlan] || 45;
+        const dailyRateAed = trip.foodRatesAed[trip.foodPlan] || 24;
         const foodAedTotal = dailyRateAed * persons * days;
         const foodInrTotal = foodAedTotal * inrRate;
         totalAed += foodAedTotal;
         totalInr += foodInrTotal;
-        const planLabel = trip.foodPlan === 'budget' ? 'Budget' : 'Standard';
+        let planLabel = 'Option 2: Budget Cafeteria';
+        if (trip.foodPlan === 'tiffin') planLabel = 'Option 1: Self-Cooking / Tiffin Mess';
+        else if (trip.foodPlan === 'budget_cafeteria') planLabel = 'Option 2: Budget Cafeteria';
+        else if (trip.foodPlan === 'economical') planLabel = 'Option 3: Economical Dining';
+        else if (trip.foodPlan === 'comfortable') planLabel = 'Option 4: Business / Comfortable Dining';
         breakdown.push({ name: `Food & Water (${planLabel}: ${persons} Pax × ${days} Days @ ${dailyRateAed} AED [₹${Math.round(dailyRateAed * inrRate)}]/day)`, aed: foodAedTotal, inr: foodInrTotal });
       }
 
@@ -1796,20 +1954,20 @@
         breakdown.push({ name: `NOL Metro Passes (${nolPassCount} × 7-Day for ${days} Days, ${persons} Pax)`, aed: nolAed, inr: nolInr });
       }
 
-      // Dynamic Tourist SIM Card Calculation (Base 28-day pack AED 49 + 30-day top-up if >28 days)
+      // Dynamic Tourist SIM Card Calculation (Confirmed du 10GB + 60 Mins @ AED 99 per 28-day cycle)
       const simCycleCount = Math.ceil(days / 28);
-      const simPerPaxAed = 49 * simCycleCount;
+      const simPerPaxAed = 99 * simCycleCount;
       const simPerPaxInr = Math.round(simPerPaxAed * inrRate);
 
       // Update SIM UI Elements
       const simTitleEl = document.getElementById('simTierTitle');
       const simDescEl = document.getElementById('simTierDesc');
       if (simTitleEl) {
-        const cycleText = simCycleCount === 1 ? 'Tourist SIM Card (28 Days)' : `Tourist SIM + Extension (${simCycleCount} Packs)`;
+        const cycleText = simCycleCount === 1 ? 'du Tourist SIM (28 Days: 10GB + 60 Mins)' : `du Tourist SIM (${simCycleCount} × 28-Day Packs: ${simCycleCount * 10}GB + ${simCycleCount * 60} Mins)`;
         simTitleEl.innerHTML = `${cycleText}: AED ${simPerPaxAed} <span style="color:#059669; font-weight:700;">(₹${simPerPaxInr.toLocaleString('en-IN')})</span>`;
       }
       if (simDescEl) {
-        simDescEl.innerHTML = `Base pack valid 28 days (4GB 5G + 30 Mins). ${simCycleCount > 1 ? `Extended with ${simCycleCount - 1} monthly recharge for ${days} days stay.` : 'Covers entire trip.'}`;
+        simDescEl.innerHTML = `du 10GB 5G Data + 60 Local & Intl Mins. ${simCycleCount > 1 ? `Recharge every 28 days via du App (${simCycleCount} cycles for ${days} days stay).` : 'Covers entire trip.'}`;
       }
 
       if (document.getElementById('chk_sim') && document.getElementById('chk_sim').checked) {
