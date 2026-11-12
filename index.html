@@ -1274,6 +1274,56 @@
 
     </section>
 
+
+    <!-- Section 7: Smart Day-Planner & Trip Feasibility Engine -->
+    <section class="section-card" id="itineraryEngineSection" style="border: 1.5px solid #0284c7; background: #ffffff;">
+      <div class="section-header">
+        <div class="section-icon" style="background:#0284c7; color:#ffffff;">🧭</div>
+        <div style="flex:1;">
+          <h2 class="section-title">Smart Itinerary & Feasibility Engine</h2>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+            Excludes Arrival & Departure travel buffer • Balances morning vs afternoon/evening slots
+          </div>
+        </div>
+      </div>
+
+      <!-- Days Feasibility Summary Alert -->
+      <div id="feasibilityCard" style="border-radius: 12px; padding: 12px; margin-bottom: 12px; transition: all 0.3s;">
+        <!-- Injected dynamically via JS -->
+      </div>
+
+      <!-- Time Budget Metrics Bar -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; text-align: center;">
+        <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 8px 6px;">
+          <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Total Stay</div>
+          <div id="statTotalDays" style="font-size: 15px; font-weight: 800; color: var(--text-main);">5 Days</div>
+        </div>
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 8px 6px;">
+          <div style="font-size: 10px; color: #166534; text-transform: uppercase; font-weight: 700;">Effective Sightseeing</div>
+          <div id="statEffectiveDays" style="font-size: 15px; font-weight: 800; color: #15803d;">3 Full Days</div>
+        </div>
+        <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 8px 6px;">
+          <div style="font-size: 10px; color: #1e40af; text-transform: uppercase; font-weight: 700;">Required Days</div>
+          <div id="statRequiredDays" style="font-size: 15px; font-weight: 800; color: #1d4ed8;">3.5 Days</div>
+        </div>
+      </div>
+
+      <!-- Travel Buffer Notice -->
+      <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 10px; margin-bottom: 14px; font-size: 11.5px; color: #92400e;">
+        ✈️ <strong>Arrival & Departure Logistics Rule:</strong> Day 1 (Flight landing, airport immigration, NOL purchase & hotel check-in/unpacking) and Final Day (Hotel checkout, packing & 3-hour airport check-in) provide 0 full sightseeing days. Effective touring days = <code>Max(1, Total Days - 2)</code>.
+      </div>
+
+      <!-- Day-by-Day Smart Visual Itinerary Breakdown -->
+      <div style="font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; display:flex; justify-content:space-between; align-items:center;">
+        <span>📅 Smart Day-by-Day Activity Schedule:</span>
+        <span id="itineraryStatusPill" class="badge" style="background:#e0f2fe; color:#0369a1;">Generated</span>
+      </div>
+
+      <div id="dayPlanList" style="display: flex; flex-direction: column; gap: 10px;">
+        <!-- Injected via updateSmartItinerary() -->
+      </div>
+    </section>
+
     <!-- Section 6: Free Attractions & Sightseeing -->
     <section class="section-card">
       <div class="section-header">
@@ -1788,6 +1838,283 @@
         </div>
       `;
       document.getElementById('modalSummaryContent').innerHTML = modalHtml;
+
+      // Update Smart Day-by-Day Itinerary and Feasibility Engine
+      updateSmartItinerary(days);
+    }
+
+    
+    // Smart Itinerary & Feasibility Engine
+    function updateSmartItinerary(totalDays) {
+      // Buffer rule: Day 1 (Arrival / Unpacking / NOL) and Last Day (Checkout / Packing / Airport 3h before)
+      // If trip is 1 day, effective = 1; if 2 days, effective = 1; if >=3 days, effective = totalDays - 2
+      const effectiveTouringDays = totalDays <= 1 ? 1 : (totalDays === 2 ? 1 : totalDays - 2);
+
+      // Collect active attractions selected by user
+      const isCruise = document.getElementById('chk_cruise') && document.getElementById('chk_cruise').checked;
+      const isSafari = document.getElementById('chk_safari') && document.getElementById('chk_safari').checked;
+      const isBurj = document.getElementById('chk_burj') && document.getElementById('chk_burj').checked;
+      const isFrame = document.getElementById('chk_frame') && document.getElementById('chk_frame').checked;
+      const isGlobal = document.getElementById('chk_global') && document.getElementById('chk_global').checked;
+      const isMuseum = document.getElementById('chk_museum') && document.getElementById('chk_museum').checked;
+
+      // Day block allocations based on verified real-world operational hours & physical logistics:
+      // Global Village: Opens 4 PM, requires 5-6 hours walk & dinner -> Takes 1 Dedicated Afternoon/Evening Day Block
+      // Hummer Safari: Hotel pickup 2:30-3:00 PM, return 9:30 PM -> Takes 1 Dedicated Afternoon/Evening Day Block
+      // Old Dubai (Fahidi, Gold & Spice Souk, Creek Abra) + Frame: Ideal Morning/Midday Cultural Block -> 1 Day Block
+      // Burj Khalifa (Morning/Afternoon At The Top 124/125 + Evening Fountain/LED Show) + Museum of Future: Downtown Block -> 1 Day Block
+      // Atlantis Scenic Cruise (2h Harbour cruise) + Jumeirah Sunset Beach: Coastal/Marina Block -> 1 Day Block
+
+      let dayPlans = [];
+
+      // Always include Arrival and Departure logistics
+      const arrivalPlan = {
+        dayNum: 1,
+        title: "Day 1: Arrival, Airport Logistics & Hotel Check-in",
+        badge: "🛬 Logistics Buffer",
+        badgeBg: "#f1f5f9",
+        badgeColor: "#475569",
+        slots: [
+          { time: "Afternoon", activity: "Flight Landing at DXB, Immigration & Baggage claim. Pick up NOL Card & Tourist SIM at terminal.", type: "logistics" },
+          { time: "Evening", activity: "Hotel / Airbnb Check-in, unpacking, local area walking & relaxing dinner nearby.", type: "free" }
+        ]
+      };
+
+      // Construct Sightseeing Blocks based on user selected toggles
+      let touringBlocks = [];
+
+      // Block A: Downtown & Modern Marvels
+      let blockDowntown = {
+        title: "Downtown Icons: Futuristic Dubai & Burj Khalifa",
+        slots: []
+      };
+      if (isMuseum) {
+        blockDowntown.slots.push({ time: "Morning (10:00 AM - 1:00 PM)", activity: "Museum of the Future (Book 2-3 weeks in advance for 10 AM slot).", type: "paid" });
+      } else {
+        blockDowntown.slots.push({ time: "Morning (10:30 AM - 1:00 PM)", activity: "Dubai Mall explore, Dubai Aquarium giant glass viewing (Free).", type: "free" });
+      }
+      if (isBurj) {
+        blockDowntown.slots.push({ time: "Afternoon (2:30 PM - 5:00 PM)", activity: "Burj Khalifa: At The Top (Level 124 & 125 observation decks).", type: "paid" });
+      } else {
+        blockDowntown.slots.push({ time: "Afternoon (3:00 PM - 5:30 PM)", activity: "Souk Al Bahar & Dubai Mall shopping stroll.", type: "free" });
+      }
+      blockDowntown.slots.push({ time: "Evening (6:00 PM - 9:00 PM)", activity: "Burj Khalifa Fountain Show & Tower LED Laser Show (Runs every 30m, 100% Free).", type: "free" });
+      touringBlocks.push(blockDowntown);
+
+      // Block B: Hummer Desert Safari
+      if (isSafari) {
+        touringBlocks.push({
+          title: "Desert Expedition: High Dune Bashing & Arabian Night",
+          slots: [
+            { time: "Morning (9:30 AM - 1:00 PM)", activity: "Relaxed morning / Pool swim / Brunch at stay.", type: "free" },
+            { time: "Afternoon (2:45 PM Pickup)", activity: "Hummer H2 Desert Safari: 30m Dune Bashing, Camel ride, Quad biking.", type: "paid" },
+            { time: "Evening (6:00 PM - 9:30 PM)", activity: "Desert Camp BBQ Buffet Dinner, Tanoura Show, Belly Dance & Live Fire show.", type: "paid" }
+          ]
+        });
+      }
+
+      // Block C: Old Dubai Cultural Heritage & Gold Souk
+      let blockOldDubai = {
+        title: "Old Dubai Heritage, Creek Crossing & Gold Souk",
+        slots: [
+          { time: "Morning (9:00 AM - 12:00 PM)", activity: "Al Fahidi Historical Neighbourhood (Bastakiya wind towers, sikkas, Dubai Museum).", type: "free" },
+          { time: "Midday (12:15 PM - 1:00 PM)", activity: "Traditional Abra Creek Ride (AED 1 / ₹26) crossing from Bur Dubai to Deira.", type: "paid" },
+          { time: "Afternoon (1:00 PM - 3:30 PM)", activity: "Deira Gold Souk & Spice Souk exploration, saffron & Arabic perfumes.", type: "free" }
+        ]
+      };
+      if (isFrame) {
+        blockOldDubai.slots.push({ time: "Late Afternoon (4:30 PM - 6:30 PM)", activity: "Dubai Frame + Zabeel Park (150m glass bridge viewing Old vs New Dubai).", type: "paid" });
+      }
+      touringBlocks.push(blockOldDubai);
+
+      // Block D: Coastal Marina & Modern Abra Cruise
+      let blockCoastal = {
+        title: "Coastal Luxury: Palm Jumeirah & Marina Sunset",
+        slots: []
+      };
+      if (isCruise) {
+        blockCoastal.slots.push({ time: "Morning/Midday (11:00 AM - 1:30 PM)", activity: "Atlantis Scenic Cruise (Modern Abra, 120-min cruise via Dubai Harbour, Palm & Ain Dubai).", type: "paid" });
+      } else {
+        blockCoastal.slots.push({ time: "Morning (10:30 AM - 1:00 PM)", activity: "Dubai Marina Walk & JBR The Beach stroll.", type: "free" });
+      }
+      blockCoastal.slots.push({ time: "Sunset (4:45 PM - 6:30 PM)", activity: "Jumeirah Sunset Beach: Golden hour sunset photo-op facing Burj Al Arab.", type: "free" });
+      blockCoastal.slots.push({ time: "Evening (7:30 PM - 10:00 PM)", activity: "Bluewaters Island & Ain Dubai illuminated pedestrian bridge walk.", type: "free" });
+      touringBlocks.push(blockCoastal);
+
+      // Block E: Global Village (Exclusive Evening Theme Park)
+      if (isGlobal) {
+        touringBlocks.push({
+          title: "Multicultural Carnival: Global Village Evening",
+          slots: [
+            { time: "Daytime (Morning - 3:30 PM)", activity: "Rest, souvenir shopping or relaxed pool session.", type: "free" },
+            { time: "Late Afternoon (4:30 PM - 7:30 PM)", activity: "Global Village Gate Entry (30+ Country pavilions, cultural shows, Stunt show).", type: "paid" },
+            { time: "Night (7:30 PM - 11:00 PM)", activity: "International street food dinner crawl, dragon kingdom & carnival rides.", type: "paid" }
+          ]
+        });
+      }
+
+      // Calculate Total Required Touring Days
+      const requiredTouringDays = touringBlocks.length;
+      const totalRequiredDays = requiredTouringDays + 2; // Adding 2 buffer days (Arrival + Departure)
+
+      // Update Statistic Metrics
+      document.getElementById('statTotalDays').innerText = `${totalDays} Days`;
+      document.getElementById('statEffectiveDays').innerText = `${effectiveTouringDays} Touring Days`;
+      document.getElementById('statRequiredDays').innerText = `${totalRequiredDays} Days Needed`;
+
+      // Determine Feasibility State: Insufficient vs Perfect vs Comfortable / Extended
+      const feasCard = document.getElementById('feasibilityCard');
+      const statusPill = document.getElementById('itineraryStatusPill');
+
+      if (effectiveTouringDays < requiredTouringDays) {
+        // Insufficient Days
+        const shortage = requiredTouringDays - effectiveTouringDays;
+        feasCard.style.background = "#fef2f2";
+        feasCard.style.border = "1.5px solid #f87171";
+        feasCard.innerHTML = `
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:20px;">⚠️</span>
+            <div style="font-size:13px; font-weight:800; color:#991b1b;">
+              Trip Duration is INSUFFICIENT (${totalDays} Days Selected)
+            </div>
+          </div>
+          <div style="font-size:11.5px; color:#b91c1c; margin-top:4px; line-height:1.4;">
+            Your chosen activities require at least <strong>${requiredTouringDays} full sightseeing days</strong> (+2 arrival/departure buffer days = <strong>${totalRequiredDays} Total Days</strong>). With only ${totalDays} days, you will face severe rush or will have to skip <strong>${shortage} major experience(s)</strong>.
+          </div>
+          <div style="margin-top:8px;">
+            <button onclick="updateCounter('days', ${totalRequiredDays - totalDays})" style="background:#dc2626; color:white; border:none; padding:5px 12px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer;">
+              ⚡ Auto-adjust to Recommended ${totalRequiredDays} Days
+            </button>
+          </div>
+        `;
+        statusPill.style.background = "#fee2e2";
+        statusPill.style.color = "#991b1b";
+        statusPill.innerText = `Needs +${shortage} More Days`;
+      } else if (effectiveTouringDays === requiredTouringDays) {
+        // Perfect Optimal Balance
+        feasCard.style.background = "#f0fdf4";
+        feasCard.style.border = "1.5px solid #4ade80";
+        feasCard.innerHTML = `
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:20px;">🎯</span>
+            <div style="font-size:13px; font-weight:800; color:#166534;">
+              PERFECT DURATION (${totalDays} Days is 100% Optimal)
+            </div>
+          </div>
+          <div style="font-size:11.5px; color:#15803d; margin-top:4px;">
+            Every single activity is scheduled in its prime time slot without clashing, over-exhaustion, or airport buffer conflicts!
+          </div>
+        `;
+        statusPill.style.background = "#dcfce7";
+        statusPill.style.color = "#166534";
+        statusPill.innerText = "Optimal Pace";
+      } else {
+        // Comfortable / Extended Stay
+        const extraDays = effectiveTouringDays - requiredTouringDays;
+        feasCard.style.background = "#eff6ff";
+        feasCard.style.border = "1.5px solid #60a5fa";
+        feasCard.innerHTML = `
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:20px;">🏖️</span>
+            <div style="font-size:13px; font-weight:800; color:#1e40af;">
+              RELAXED & COMFORTABLE STAY (${extraDays} Leisure Day${extraDays > 1 ? 's' : ''})
+            </div>
+          </div>
+          <div style="font-size:11.5px; color:#1d4ed8; margin-top:4px;">
+            All selected activities fit seamlessly with <strong>${extraDays} extra day(s)</strong> available for luxury beach lounging, shopping, or day trips to Abu Dhabi (Sheikh Zayed Grand Mosque).
+          </div>
+        `;
+        statusPill.style.background = "#dbeafe";
+        statusPill.style.color = "#1e40af";
+        statusPill.innerText = `${extraDays} Free Day${extraDays > 1 ? 's' : ''}`;
+      }
+
+      // Assemble Visual Day-by-Day Cards
+      let dayHtml = '';
+
+      // 1. Arrival Day
+      dayHtml += `
+        <div style="border: 1px solid var(--border); border-radius: 10px; padding: 10px; background: #fafafa;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <strong style="font-size: 13px; color: var(--text-main);">${arrivalPlan.title}</strong>
+            <span class="badge" style="background:${arrivalPlan.badgeBg}; color:${arrivalPlan.badgeColor};">${arrivalPlan.badge}</span>
+          </div>
+          ${arrivalPlan.slots.map(s => `
+            <div style="font-size: 11.5px; margin-bottom: 4px; display:flex; gap:6px;">
+              <span style="font-weight:700; color:var(--text-muted); min-width:80px;">${s.time}:</span>
+              <span style="color:var(--text-main);">${s.activity}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      // 2. Sightseeing Days
+      touringBlocks.forEach((b, idx) => {
+        const currentDayNum = idx + 2;
+        const isScheduled = currentDayNum <= (totalDays - 1);
+        const cardBorder = isScheduled ? 'var(--border)' : '#fca5a5';
+        const cardBg = isScheduled ? '#ffffff' : '#fff5f5';
+
+        dayHtml += `
+          <div style="border: 1px solid ${cardBorder}; border-radius: 10px; padding: 10px; background: ${cardBg};">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <strong style="font-size: 13px; color: ${isScheduled ? 'var(--primary-dark)' : '#b91c1c'};">
+                Day ${currentDayNum}: ${b.title}
+              </strong>
+              <span class="badge" style="background:${isScheduled ? '#e0f2fe' : '#fee2e2'}; color:${isScheduled ? '#0369a1' : '#991b1b'};">
+                ${isScheduled ? 'Confirmed Day' : '⚠️ Day Overflow'}
+              </span>
+            </div>
+            ${b.slots.map(s => `
+              <div style="font-size: 11.5px; margin-bottom: 4px; display:flex; gap:6px;">
+                <span style="font-weight:700; color:${s.type==='paid' ? '#0369a1' : '#475569'}; min-width:110px;">${s.time}:</span>
+                <span style="color:var(--text-main);">${s.activity}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      });
+
+      // 3. Free Leisure Days if totalDays > totalRequiredDays
+      if (totalDays > totalRequiredDays) {
+        const freeDayStart = touringBlocks.length + 2;
+        const freeDayEnd = totalDays - 1;
+        dayHtml += `
+          <div style="border: 1px dashed #93c5fd; border-radius: 10px; padding: 10px; background: #eff6ff;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <strong style="font-size: 13px; color: #1d4ed8;">
+                Day ${freeDayStart}${freeDayEnd > freeDayStart ? ` – ${freeDayEnd}` : ''}: Leisure, Mall Shopping or Abu Dhabi Day Trip
+              </strong>
+              <span class="badge" style="background:#bfdbfe; color:#1e3a8a;">Free Day</span>
+            </div>
+            <div style="font-size: 11.5px; color:#1e40af;">
+              Relax at Kite Beach, luxury outlet shopping at Dubai Mall/Mall of the Emirates, or book a 1-day bus excursion to Sheikh Zayed Grand Mosque in Abu Dhabi.
+            </div>
+          </div>
+        `;
+      }
+
+      // 4. Departure Day
+      if (totalDays >= 2) {
+        dayHtml += `
+          <div style="border: 1px solid var(--border); border-radius: 10px; padding: 10px; background: #fafafa;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <strong style="font-size: 13px; color: var(--text-main);">Day ${totalDays}: Souvenir Shopping, Packing & Departure</strong>
+              <span class="badge" style="background:#f1f5f9; color:#475569;">🛫 Departure Buffer</span>
+            </div>
+            <div style="font-size: 11.5px; margin-bottom: 4px; display:flex; gap:6px;">
+              <span style="font-weight:700; color:var(--text-muted); min-width:80px;">Morning:</span>
+              <span style="color:var(--text-main);">Last-minute dates/patchi chocolates shopping, hotel checkout by 11:00 AM (luggage deposit).</span>
+            </div>
+            <div style="font-size: 11.5px; display:flex; gap:6px;">
+              <span style="font-weight:700; color:var(--text-muted); min-width:80px;">Departure:</span>
+              <span style="color:var(--text-main);">Reach Dubai International Airport (DXB) at least 3 hours prior to departure for baggage drop & customs.</span>
+            </div>
+          </div>
+        `;
+      }
+
+      document.getElementById('dayPlanList').innerHTML = dayHtml;
     }
 
     function openBreakdownModal() {
