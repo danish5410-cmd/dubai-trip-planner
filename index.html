@@ -744,7 +744,7 @@
       <div class="switch-row">
         <div class="switch-info">
           <div class="switch-name">Include Flight Tickets</div>
-          <div class="switch-desc">Estimated round trip from India per person</div>
+          <div class="switch-desc">Round trip: Min ₹32,000 – Max ₹40,000 (Prefilled avg: <strong>₹36,000</strong>)</div>
         </div>
         <label class="toggle-switch">
           <input type="checkbox" id="includeFlight" onchange="toggleFlightInput()" checked />
@@ -752,8 +752,11 @@
         </label>
       </div>
       <div id="flightInputContainer" style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 10px; border-radius: 10px;">
-        <span style="font-size: 12px; font-weight: 600;">Cost / Person (₹):</span>
-        <input type="number" id="flightCostInr" value="20000" step="500" style="width: 110px; padding: 6px; border: 1px solid var(--border); border-radius: 6px; font-weight: 700; text-align: right;" oninput="calculateTripTotal()" />
+        <div>
+          <span style="font-size: 12px; font-weight: 700;">Cost / Person (₹):</span>
+          <div style="font-size: 10px; color: var(--text-muted);">Adjustable (Min ₹32k – ₹40k)</div>
+        </div>
+        <input type="number" id="flightCostInr" value="36000" step="500" min="20000" max="60000" style="width: 115px; padding: 6px; border: 1px solid var(--border); border-radius: 6px; font-weight: 800; font-size: 14px; text-align: right; color: var(--primary-dark);" oninput="calculateTripTotal()" />
       </div>
       <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">
         Check deals on: <a href="https://www.google.com/travel/flights" target="_blank" class="pill-link">Google Flights ↗</a> or <a href="https://www.skyscanner.co.in" target="_blank" class="pill-link">Skyscanner ↗</a>
@@ -770,13 +773,31 @@
         </div>
       </div>
       <div class="radio-card-group">
-        <!-- 1. Capsule Hotel Pod -->
+        <!-- 1. Standard Dormitory Bed (Daily & Monthly Options) -->
+        <label class="radio-card active" onclick="selectStay('dormitory')">
+          <input type="radio" name="stayType" value="dormitory" checked style="display:none" />
+          <div class="radio-details">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <div class="radio-title" style="color:#0f766e;">Dormitory Bed (Deira & Bur Dubai)</div>
+              <span class="badge" style="background:#ccfbf1; color:#0f766e; font-size:10px;">Best Value</span>
+            </div>
+            <div class="radio-subtitle">
+              📍 <strong>Al Ras, Deira & Al Fahidi, Bur Dubai:</strong> ₹800–₹900 / day (~AED 33 / night) or approx ₹26,000–₹30,000 / month (all bills incl: AC, DEWA, high-speed WiFi, shared washroom & kitchen).
+            </div>
+          </div>
+          <div class="radio-price">
+            <div class="radio-price-val" id="dormDailyAedDisplay">AED 33</div>
+            <div class="radio-price-sub" id="dormDailyInrDisplay">₹850 / day (~₹26k-30k/mo)</div>
+          </div>
+        </label>
+
+        <!-- 2. Capsule Hotel Pod -->
         <label class="radio-card" onclick="selectStay('capsule')">
           <input type="radio" name="stayType" value="capsule" style="display:none" />
           <div class="radio-details">
-            <div class="radio-title">Capsule Hotel Pod</div>
+            <div class="radio-title">Capsule Hotel Pod (Futuristic Cabin)</div>
             <div class="radio-subtitle">
-              📍 <strong>Bur Dubai & Deira:</strong> WeStay Capsule (Al Ghubaiba), Dubai POD (Al Rolla / Burjuman), Capsule in Hostel (Al Baraha Deira). Includes AC pod, privacy curtain, WiFi, locker & shared kitchen.
+              📍 <strong>Bur Dubai & Deira:</strong> WeStay Capsule (Al Ghubaiba), Dubai POD (Al Rolla / Burjuman), Capsule in Hostel (Al Baraha Deira). Single private pod, privacy curtain, WiFi, locker & shared facilities.
             </div>
           </div>
           <div class="radio-price">
@@ -785,25 +806,7 @@
           </div>
         </label>
 
-        <!-- 1B. Monthly Dormitory Bed (Dynamically spawned when cheaper than Capsule: ≥13 Days) -->
-        <label class="radio-card" id="dormitoryCard" onclick="selectStay('dormitory')" style="display:none; border-color: #10b981; background: #f0fdf4;">
-          <input type="radio" name="stayType" value="dormitory" style="display:none" />
-          <div class="radio-details">
-            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-              <div class="radio-title" style="color: #065f46;">Monthly Dormitory Bed (Deira / Bur Dubai)</div>
-              <span class="badge" style="background: #059669; color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px;">⚡ High-Stay Unlocked (Cheaper than Capsule)</span>
-            </div>
-            <div class="radio-subtitle" style="color: #047857;">
-              📍 <strong>Wholesale Spice & Commodity Hub (Deira / Bur Dubai):</strong> Shared dormitory bed, all bills included (DEWA + WiFi). Automatically unlocked because staying 13+ days costs less than daily capsule pods!
-            </div>
-          </div>
-          <div class="radio-price">
-            <div class="radio-price-val" id="dormPriceAedDisplay" style="color: #059669;">AED 700</div>
-            <div class="radio-price-sub" id="dormPriceSubDisplay">₹18,200 / month</div>
-          </div>
-        </label>
-
-        <!-- 2. Separate Budget Hotel Room -->
+        <!-- 3. Separate Budget Hotel Room -->
         <label class="radio-card" onclick="selectStay('budget_hotel')">
           <input type="radio" name="stayType" value="budget_hotel" style="display:none" />
           <div class="radio-details">
@@ -1724,10 +1727,10 @@
     let trip = {
       persons: 2,
       days: 5,
-      stayType: 'capsule', // 'capsule', 'dormitory', 'budget_hotel', 'airbnb', 'hotel'
+      stayType: 'dormitory', // 'dormitory', 'capsule', 'budget_hotel', 'airbnb', 'hotel'
       stayRatesAed: {
+        dormitory: 33,     // ₹850/day (~AED 33/day) capped at monthly rate for longer stays
         capsule: 55,       // Capsule pod in Bur Dubai / Deira (AED 55 / ₹1,430)
-        dormitory: 700,    // Monthly Dormitory Bed in Deira / Bur Dubai (AED 700 / mo)
         budget_hotel: 150, // Separate Private Budget Hotel in Deira / Bur Dubai (AED 150 / ₹3,900)
         airbnb: 220,       // Airbnb Apartment (AED 220 / ₹5,720)
         hotel: 380         // 3/4-Star Hotel (AED 380 / ₹9,880)
@@ -1823,43 +1826,37 @@
       const stayInrTotal = stayAedTotal * inrRate;
       let stayLabel = 'Airbnb Apartment';
 
-      // Check break-even between Capsule Hotel (AED 55/night) and Monthly Dormitory (min AED 700/mo)
-      const capsuleTotalCost = 55 * nights;
-      const dormMonths = Math.max(1, Math.ceil(days / 30));
-      const dormTotalCost = 700 * dormMonths;
-      const dormCard = document.getElementById('dormitoryCard');
-      const dormPriceValEl = document.getElementById('dormPriceAedDisplay');
-      const dormPriceSubEl = document.getElementById('dormPriceSubDisplay');
-
-      // Rule: Do not spawn dormitory bed until it costs less than capsule hotel (Break-even at >= 13 days)
-      if (capsuleTotalCost > dormTotalCost) {
-        if (dormCard) {
-          dormCard.style.display = 'flex';
-          if (dormPriceValEl) dormPriceValEl.innerText = `AED ${dormTotalCost}`;
-          if (dormPriceSubEl) dormPriceSubEl.innerText = `₹${Math.round(dormTotalCost * inrRate).toLocaleString('en-IN')} (${dormMonths} mo @ AED 700)`;
-        }
+      // Dormitory calculation: ₹850/day (~AED 33/day) with smart monthly cap (~AED 1,000 to 1,150 / ₹26k-30k/mo)
+      let dormCalculatedAed = 0;
+      let dormDescription = '';
+      if (days >= 30) {
+        const months = Math.ceil(days / 30);
+        dormCalculatedAed = 1000 * months * persons; // Approx ₹26,000 - ₹30,000 / month
+        dormDescription = `Stay: Dormitory Bed Monthly Pass (${persons} Pax × ${months} Month(s) @ AED 1,000/mo [₹26,000/mo])`;
       } else {
-        if (dormCard) {
-          dormCard.style.display = 'none';
-          if (trip.stayType === 'dormitory') {
-            selectStay('capsule');
-            return;
-          }
+        // Daily rate: ₹850 (~AED 33/day) capped at 1 month fee if staying near a full month
+        const rawDailyAed = 33 * nights * persons;
+        const oneMonthCapAed = 1000 * persons;
+        if (rawDailyAed > oneMonthCapAed) {
+          dormCalculatedAed = oneMonthCapAed;
+          dormDescription = `Stay: Dormitory Bed (${persons} Pax × ${nights} Nights capped at Monthly Pass @ AED 1,000 [₹26,000])`;
+        } else {
+          dormCalculatedAed = rawDailyAed;
+          dormDescription = `Stay: Dormitory Bed (${persons} Pax × ${nights} Nights @ ₹850 [AED 33]/day)`;
         }
       }
 
-      if (trip.stayType === 'capsule') {
+      if (trip.stayType === 'dormitory') {
+        const dormInr = dormCalculatedAed * inrRate;
+        totalAed += dormCalculatedAed;
+        totalInr += dormInr;
+        breakdown.push({ name: dormDescription, aed: dormCalculatedAed, inr: dormInr });
+      } else if (trip.stayType === 'capsule') {
         const capsuleTotalAed = 55 * nights * persons;
         const capsuleTotalInr = capsuleTotalAed * inrRate;
         totalAed += capsuleTotalAed;
         totalInr += capsuleTotalInr;
         breakdown.push({ name: `Stay: Capsule Hotel Pod (${persons} Pax × ${nights} Nights @ AED 55 [₹${Math.round(55 * inrRate)}]/night)`, aed: capsuleTotalAed, inr: capsuleTotalInr });
-      } else if (trip.stayType === 'dormitory') {
-        const dormAed = dormTotalCost * persons;
-        const dormInr = dormAed * inrRate;
-        totalAed += dormAed;
-        totalInr += dormInr;
-        breakdown.push({ name: `Stay: Monthly Dormitory Bed (${persons} Pax × ${dormMonths} Month(s) [${days} Days] @ AED 700/mo [₹${Math.round(700 * inrRate).toLocaleString('en-IN')}])`, aed: dormAed, inr: dormInr });
       } else {
         if (trip.stayType === 'budget_hotel') stayLabel = 'Separate Budget Hotel (Deira/Bur Dubai)';
         else if (trip.stayType === 'airbnb') stayLabel = 'Airbnb / Serviced Apartment';
